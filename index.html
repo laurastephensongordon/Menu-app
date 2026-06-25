@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5 Healthy World Menus</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState } = React;
+
+
+// ── COST DATA (AUD estimates, Coles / Woolworths, May 2025) ──────────────────
+const costs = {
+  1: {
+    total: 72, perServe: 3.60,
+    tip: "Sea bass & saffron are the main cost drivers. Swap sea bass for basa fillets (~$10 saving) and replace saffron with ½ tsp turmeric for a budget version around $52.",
+    rows: [
+      { cat: "🥦 Produce", detail: "Fennel, cherry tomatoes, cucumber, radishes, zucchini, capsicum, onions, garlic, ginger, lemons, fresh herbs", est: 18 },
+      { cat: "🥩 Protein & Dairy", detail: "Sea bass 4×150g (~$22), halloumi 250g (~$5), feta 200g (~$4), chickpeas can (~$1.50)", est: 33 },
+      { cat: "🌾 Grains & Pasta", detail: "Basmati rice, whole wheat orzo, pita breads, red lentils", est: 8 },
+      { cat: "🫙 Pantry", detail: "Crushed tomatoes, olives, sun-dried tomatoes, saffron (~$4), za'atar, sumac, spices, olive oil, broth, white wine, pomegranate seeds", est: 13 },
+    ]
+  },
+  2: {
+    total: 68, perServe: 3.40,
+    tip: "Atlantic salmon is the biggest spend. Use frozen salmon portions to save ~$6, or swap to tinned salmon for the fried rice and soba bowl (saving ~$14). Soba noodles are available in the Woolworths Asian aisle.",
+    rows: [
+      { cat: "🥦 Produce", detail: "Cauliflower, broccoli, bok choy, mangoes, mandarins, avocados, cucumber, cabbages, carrots, shiitake, ginger, garlic, limes, cilantro", est: 22 },
+      { cat: "🥩 Protein & Dairy", detail: "Salmon fillets 4×150g (~$20), eggs ×8 (~$5), frozen edamame 400g (~$4)", est: 29 },
+      { cat: "🌾 Grains & Noodles", detail: "Brown rice 1kg, buckwheat soba 400g (~$5), ramen/udon noodles 300g", est: 10 },
+      { cat: "🫙 Pantry", detail: "White miso, tamari, sesame oil, rice vinegar, mirin, honey, cornstarch, sesame seeds, almonds, togarashi, nori, pickled ginger, vegetable broth", est: 7 },
+    ]
+  },
+  3: {
+    total: 62, perServe: 3.10,
+    tip: "Mahi-mahi (sold as 'mahi mahi' at Woolworths seafood counter) and avocados top the cost. Swap mahi-mahi for basa or barramundi to save ~$8. Jicama is a specialty item — substitute daikon radish (~$3 at Coles/Woolworths).",
+    rows: [
+      { cat: "🥦 Produce", detail: "Jicama/daikon, mangoes ×4, pineapple, cabbages, onions, spinach, tomatoes, radishes, avocados ×6, jalapeño, poblano, cilantro, mint, limes, garlic", est: 22 },
+      { cat: "🥩 Protein", detail: "Chicken thighs ×4 (~$8), mahi-mahi 600g (~$18), turkey breast 500g (~$8)", est: 34 },
+      { cat: "🌾 Grains & Legumes", detail: "White rice, thin vermicelli 300g, corn tortillas ×12, black beans ×2 cans, hominy ×2 cans (Coles/Woolworths)", est: 8 },
+      { cat: "🫙 Dairy & Pantry", detail: "Greek yogurt, cotija/feta, ancho chili, chipotle in adobo, pepitas, spices, chicken & vegetable broth, tostadas", est: 8 },
+    ]
+  },
+  4: {
+    total: 85, perServe: 4.25,
+    tip: "Fresh trout & smoked salmon make this the priciest menu. Swap fresh trout for hot-smoked salmon portions from Coles (~$12 saving) — they're already cured. Rye penne is stocked at Woolworths; whole wheat penne works equally well.",
+    rows: [
+      { cat: "🥦 Produce", detail: "Beets, turnips, carrots, parsnips, potatoes, leeks, shallot, cucumber, nettles/baby spinach, dill ×3 bunches, thyme, chives, parsley, onion, garlic, lemons", est: 20 },
+      { cat: "🥩 Protein", detail: "Fresh trout fillet 600g (~$22), smoked salmon 200g (~$9), eggs ×8 (~$5)", est: 36 },
+      { cat: "🧀 Dairy", detail: "Goat cheese 100g (~$5), crème fraîche 200ml (~$4), oat cream 200ml (~$4), butter (~$2)", est: 15 },
+      { cat: "🌾 Grains & Pantry", detail: "Pearl barley, rye/wheat penne, rye bread, rye crispbreads, green lentils, white wine, capers, mustards, vinegars, honey, walnuts, caraway seeds, broth", est: 14 },
+    ]
+  },
+  5: {
+    total: 57, perServe: 2.85,
+    tip: "Most budget-friendly menu overall. Hemp seeds, tahini and nutritional yeast are pantry investments — buy larger sizes to reduce per-use cost. Wild rice blend is available at Coles/Woolworths; brown rice saves ~$4 and works just as well.",
+    rows: [
+      { cat: "🥦 Produce", detail: "Sweet potatoes, zucchini ×6, broccolini, kale ×3 bunches, purple cabbage, beets ×4, avocados ×8, cherry tomatoes, baby spinach, basil, parsley, rosemary, onions, garlic, lemons", est: 26 },
+      { cat: "🥩 Plant Protein", detail: "Extra-firm tofu ×2 blocks (~$6), chickpeas ×2 cans (~$3), cannellini beans ×2 cans (~$3)", est: 12 },
+      { cat: "🌾 Grains & Legumes", detail: "Wild rice blend (~$6), quinoa 500g (~$5), sourdough bread, crushed tomatoes ×2 cans", est: 11 },
+      { cat: "🫙 Pantry", detail: "Tahini (~$6), nutritional yeast (~$5), hemp seeds (~$4), sunflower seeds, walnuts, smoked paprika, miso, mirin, soy sauce, sesame oil, vinegars, maple syrup, sesame seeds, vegetable broth", est: 8 },
+    ]
+  }
+};
+
+const menus = [
+  {
+    id: 1, name: "Mediterranean Vitality", theme: "Sun-kissed shores",
+    color: "#C47B1A", bg: "#FFF8ED", light: "#FEF3DC", emoji: "🌿",
+    dishes: [
+      {
+        category: "Rice Dish", icon: "🍚", name: "Lemon Herb Pilaf",
+        description: "Basmati rice with saffron, roasted chickpeas, fresh herbs & pomegranate seeds",
+        cal: 380, tags: ["High Fiber", "Vegan"], servings: 4,
+        ingredients: ["2 cups basmati rice","1 can (400g) chickpeas, drained","½ tsp saffron threads","3 cups vegetable broth","1 lemon, zested & juiced","½ cup fresh parsley, chopped","¼ cup fresh mint, chopped","½ cup pomegranate seeds","3 tbsp olive oil","1 tsp cumin","Salt & pepper to taste"],
+        steps: [
+          { title: "Bloom saffron", text: "Soak saffron threads in 2 tbsp warm water for 10 minutes until deeply golden." },
+          { title: "Toast rice", text: "Heat 2 tbsp olive oil in a large saucepan over medium heat. Add dry rice and stir for 2–3 minutes until lightly golden and fragrant." },
+          { title: "Cook rice", text: "Pour in the vegetable broth, saffron water, lemon zest, cumin, and 1 tsp salt. Bring to a boil, then reduce to the lowest heat, cover, and cook for 15–18 minutes until all liquid is absorbed." },
+          { title: "Roast chickpeas", text: "While rice cooks, toss chickpeas with 1 tbsp olive oil, salt, and pepper on a baking sheet. Roast at 200°C (390°F) for 20 minutes until crispy." },
+          { title: "Finish & serve", text: "Fluff rice with a fork. Fold in lemon juice, parsley, and mint. Top with roasted chickpeas and pomegranate seeds. Serve warm." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "🍝", name: "Greek Orzo Primavera",
+        description: "Whole wheat orzo with roasted veggies, olives, sun-dried tomatoes & feta",
+        cal: 420, tags: ["High Protein", "Vegetarian"], servings: 4,
+        ingredients: ["400g whole wheat orzo","2 zucchini, diced","1 red bell pepper, diced","1 red onion, wedged","½ cup kalamata olives, halved","½ cup sun-dried tomatoes","200g feta cheese, crumbled","4 tbsp olive oil","2 cloves garlic, minced","1 tsp dried oregano","Fresh basil to garnish","Salt & pepper"],
+        steps: [
+          { title: "Roast vegetables", text: "Toss zucchini, bell pepper, and red onion with 2 tbsp olive oil, oregano, salt, and pepper. Spread on a baking sheet and roast at 220°C (430°F) for 25 minutes, turning once halfway through." },
+          { title: "Cook orzo", text: "Bring a large pot of salted water to a boil. Cook orzo for 9–11 minutes until al dente. Reserve ½ cup pasta water before draining." },
+          { title: "Make sauce", text: "In the same pot, heat 2 tbsp olive oil and sauté garlic for 1 minute. Add sun-dried tomatoes and stir 30 seconds." },
+          { title: "Combine", text: "Add drained orzo to the pot with the garlic mixture. Toss with roasted vegetables, olives, and a splash of pasta water to loosen. Season well." },
+          { title: "Plate & serve", text: "Divide into bowls. Top generously with crumbled feta and fresh basil. Serve immediately or at room temperature." }
+        ]
+      },
+      {
+        category: "Salad", icon: "🥗", name: "Fattoush & Halloumi",
+        description: "Crispy pita, cucumber, tomatoes, radish, grilled halloumi & sumac dressing",
+        cal: 290, tags: ["Low Carb", "Calcium Rich"], servings: 4,
+        ingredients: ["2 whole wheat pita breads","250g halloumi, sliced 1cm thick","2 large tomatoes, chopped","1 English cucumber, diced","6 radishes, thinly sliced","4 spring onions, sliced","½ cup fresh parsley","½ cup fresh mint","4 tbsp olive oil","2 tbsp lemon juice","1 tsp sumac","½ tsp dried mint","Salt"],
+        steps: [
+          { title: "Crisp the pita", text: "Tear pita into rough pieces, toss with 1 tbsp olive oil and a pinch of salt. Spread on a baking sheet and bake at 190°C (375°F) for 10–12 minutes until golden and crunchy. Set aside." },
+          { title: "Grill halloumi", text: "Heat a dry grill pan or non-stick skillet over high heat. Grill halloumi slices for 2 minutes per side until deeply golden with char marks. Do not add oil." },
+          { title: "Make dressing", text: "Whisk together remaining 3 tbsp olive oil, lemon juice, sumac, dried mint, and a pinch of salt." },
+          { title: "Assemble salad", text: "Combine tomatoes, cucumber, radish, spring onions, parsley, and mint in a large bowl. Drizzle with dressing and toss gently." },
+          { title: "Add toppings", text: "Add crispy pita pieces and toss lightly. Top with warm grilled halloumi slices. Serve immediately so the pita stays crunchy." }
+        ]
+      },
+      {
+        category: "Soup", icon: "🍲", name: "Harira Lentil Soup",
+        description: "Red lentils, tomatoes, turmeric, ginger, coriander & a squeeze of lemon",
+        cal: 240, tags: ["Iron Rich", "Anti-inflammatory"], servings: 5,
+        ingredients: ["1.5 cups red lentils, rinsed","1 can (400g) crushed tomatoes","1 large onion, diced","4 cloves garlic, minced","1 tbsp fresh ginger, grated","1 tsp turmeric","1 tsp ground coriander","1 tsp cumin","½ tsp cinnamon","5 cups vegetable broth","2 tbsp olive oil","1 lemon, juiced","Fresh cilantro to serve","Salt & pepper"],
+        steps: [
+          { title: "Sauté aromatics", text: "Heat olive oil in a large pot over medium heat. Sauté onion for 7 minutes until soft and golden. Add garlic, ginger, turmeric, coriander, cumin, and cinnamon. Stir for 1 minute until fragrant." },
+          { title: "Add lentils & tomatoes", text: "Pour in crushed tomatoes and stir well, scraping the bottom of the pot. Add lentils and vegetable broth. Bring to a boil." },
+          { title: "Simmer", text: "Reduce heat to medium-low, cover partially, and simmer for 25–30 minutes until lentils are completely broken down and soup is thick and creamy." },
+          { title: "Season & blend", text: "Season generously with salt and pepper. For a smoother texture, use an immersion blender to partially blend—leave some texture for interest." },
+          { title: "Finish & serve", text: "Stir in lemon juice. Ladle into bowls and top with fresh cilantro and a drizzle of olive oil. Serve with warm bread." }
+        ]
+      },
+      {
+        category: "Protein Main", icon: "🐟", name: "Herb-Crusted Sea Bass",
+        description: "Baked sea bass with za'atar, olive oil, roasted fennel & cherry tomatoes",
+        cal: 350, tags: ["Omega-3", "Gluten-Free"], servings: 4,
+        ingredients: ["4 sea bass fillets (150g each)","2 fennel bulbs, thinly sliced","300g cherry tomatoes","3 tbsp za'atar spice blend","4 tbsp olive oil","4 cloves garlic, sliced","1 lemon, sliced into rounds","½ cup dry white wine (or broth)","Fresh dill to garnish","Salt & pepper"],
+        steps: [
+          { title: "Prep vegetables", text: "Toss fennel slices with 2 tbsp olive oil, salt, and pepper. Spread in a large baking dish. Roast at 200°C (390°F) for 15 minutes until beginning to soften." },
+          { title: "Season fish", text: "Pat sea bass fillets completely dry with paper towel. Rub each fillet with za'atar, a pinch of salt, and 1 tbsp total olive oil." },
+          { title: "Build the dish", text: "Nestle cherry tomatoes and garlic slices among the fennel. Pour wine or broth around the vegetables. Lay lemon slices on the fennel, then place fish fillets on top." },
+          { title: "Bake", text: "Bake at 200°C (390°F) for 18–22 minutes. Fish is done when it flakes easily with a fork and the flesh is opaque throughout." },
+          { title: "Rest & serve", text: "Let rest 3 minutes. Spoon pan juices over the fish. Garnish with fresh dill and serve directly from the baking dish." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["2 fennel bulbs","300g cherry tomatoes","2 large tomatoes","1 English cucumber","6 radishes","2 zucchini","1 red bell pepper","2 red onions","4 spring onions","1 large onion","8 cloves garlic","Fresh ginger (small knob)","2 lemons","Fresh parsley (bunch)","Fresh mint (bunch)","Fresh cilantro (bunch)","Fresh dill (small bunch)"],
+      "Protein & Dairy": ["4 sea bass fillets (150g each)","250g halloumi","200g feta cheese","1 can (400g) chickpeas"],
+      "Grains & Pasta": ["2 cups basmati rice","400g whole wheat orzo","2 whole wheat pita breads","1.5 cups red lentils"],
+      "Pantry": ["1 can (400g) crushed tomatoes","½ cup kalamata olives","½ cup sun-dried tomatoes","Saffron threads","Za'atar spice blend","Sumac","Cumin","Coriander","Turmeric","Cinnamon","Dried oregano","Dried mint","Olive oil (large bottle)","Vegetable broth (2 liters)","½ cup dry white wine","Pomegranate seeds"]
+    }
+  },
+  {
+    id: 2, name: "Asian Wellness", theme: "Balance & harmony",
+    color: "#3D7A50", bg: "#F0F9F2", light: "#E0F2E6", emoji: "🌸",
+    dishes: [
+      {
+        category: "Rice Dish", icon: "🍚", name: "Ginger Cauliflower Fried Rice",
+        description: "Brown rice, cauliflower, edamame, egg, sesame oil & tamari sauce",
+        cal: 360, tags: ["High Fiber", "Balanced"], servings: 4,
+        ingredients: ["3 cups cooked brown rice (day-old is best)","½ small cauliflower, grated into rice-size pieces","1 cup frozen edamame, thawed","3 eggs, beaten","1 large carrot, diced small","4 spring onions, sliced","2 cloves garlic, minced","1 tbsp fresh ginger, grated","3 tbsp tamari (or soy sauce)","1 tbsp sesame oil","2 tbsp neutral oil","1 tsp chili flakes (optional)"],
+        steps: [
+          { title: "Prep & separate", text: "Ensure rice is cold and separated into individual grains—this prevents clumping. Grate cauliflower using a box grater or food processor to create 'cauliflower rice.'" },
+          { title: "Cook eggs", text: "Heat 1 tbsp neutral oil in a wok or large skillet over high heat. Pour in beaten eggs and scramble quickly for 1 minute until just set but still soft. Remove and set aside." },
+          { title: "Stir-fry aromatics", text: "Add remaining oil to the same pan. Stir-fry garlic, ginger, and carrot for 2 minutes on high heat. Add cauliflower and cook 3 more minutes until tender." },
+          { title: "Add rice", text: "Add the cold brown rice to the pan. Press it down and let it sit for 1–2 minutes without stirring to develop some crispiness. Then toss vigorously for 2 minutes." },
+          { title: "Finish", text: "Add edamame, tamari, and sesame oil. Return scrambled eggs and toss everything together for 1 minute. Garnish with spring onions and chili flakes." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "🍜", name: "Cold Soba Noodle Bowl",
+        description: "Buckwheat noodles, shredded cucumber, mango, edamame & miso-ginger dressing",
+        cal: 390, tags: ["Vegan", "Gut Health"], servings: 4,
+        ingredients: ["400g buckwheat soba noodles","1 large cucumber, julienned","1 ripe mango, julienned","1 cup edamame, shelled","2 carrots, julienned","4 tbsp sesame seeds, toasted","3 tbsp white miso paste","3 tbsp rice vinegar","2 tbsp soy sauce","1 tbsp fresh ginger, grated","1 tbsp sesame oil","1 tbsp honey or maple syrup","4 tbsp warm water","Fresh cilantro to serve"],
+        steps: [
+          { title: "Cook & cool noodles", text: "Cook soba noodles according to package (usually 5–7 minutes). Drain and rinse immediately under cold running water for 1 full minute. This stops cooking and prevents sticking. Drain well." },
+          { title: "Make miso dressing", text: "Whisk together miso paste, rice vinegar, soy sauce, ginger, sesame oil, honey, and warm water in a bowl until completely smooth and emulsified." },
+          { title: "Prep vegetables", text: "Julienne cucumber, carrot, and mango into thin matchsticks. Blanch edamame in boiling water for 2 minutes, then cool under cold water." },
+          { title: "Dress & toss", text: "Toss cold noodles with half the miso dressing. Let marinate for 5–10 minutes in the refrigerator for best flavor absorption." },
+          { title: "Assemble bowls", text: "Divide noodles among bowls. Arrange cucumber, mango, carrot, and edamame on top. Drizzle remaining dressing, sprinkle sesame seeds, and garnish with cilantro." }
+        ]
+      },
+      {
+        category: "Salad", icon: "🥗", name: "Asian Crunch Salad",
+        description: "Shredded cabbage, carrots, mandarin, toasted almonds & sesame-lime vinaigrette",
+        cal: 260, tags: ["Vitamin C", "Low Calorie"], servings: 4,
+        ingredients: ["½ small red cabbage, finely shredded","½ small green cabbage, finely shredded","3 carrots, grated","4 mandarin oranges, segmented","½ cup sliced almonds, toasted","4 spring onions, thinly sliced","¼ cup fresh cilantro leaves","3 tbsp sesame oil","3 tbsp rice vinegar","1.5 tbsp soy sauce","1 lime, juiced","1 tbsp honey","1 tsp fresh ginger, grated"],
+        steps: [
+          { title: "Shred & salt cabbage", text: "Finely shred both cabbages. Place in a colander, sprinkle with ½ tsp salt, toss, and let sit for 10 minutes. This softens the cabbage and draws out excess water. Squeeze dry with your hands." },
+          { title: "Toast almonds", text: "Place almonds in a dry skillet over medium heat. Toast for 3–4 minutes, tossing often, until golden and fragrant. Watch carefully—they burn fast. Cool completely." },
+          { title: "Make dressing", text: "Whisk together sesame oil, rice vinegar, soy sauce, lime juice, honey, and grated ginger until well combined." },
+          { title: "Combine salad", text: "In a large bowl, combine drained cabbage, grated carrots, spring onions, and mandarin segments. Pour dressing over and toss thoroughly." },
+          { title: "Finish & serve", text: "Add toasted almonds and cilantro right before serving to keep them crunchy. Toss once more and serve immediately or refrigerate up to 4 hours (add almonds only at serving time)." }
+        ]
+      },
+      {
+        category: "Soup", icon: "🍲", name: "Miso Mushroom Ramen",
+        description: "White miso broth, shiitake, soft-boiled egg, bok choy & togarashi",
+        cal: 310, tags: ["Probiotic", "Umami Rich"], servings: 4,
+        ingredients: ["300g ramen or udon noodles","200g shiitake mushrooms, sliced","4 baby bok choy, halved","4 eggs","6 tbsp white miso paste","1 liter vegetable broth","2 cups water","4 cloves garlic, minced","1 tbsp fresh ginger, grated","2 tbsp soy sauce","1 tbsp sesame oil","1 tbsp neutral oil","4 spring onions, sliced","Togarashi or chili flakes","Nori sheets (optional)"],
+        steps: [
+          { title: "Soft-boil eggs", text: "Bring a small pot of water to a boil. Lower eggs gently with a spoon and boil exactly 7 minutes. Transfer immediately to ice water for 5 minutes. Peel gently—the yolk should be jammy and golden." },
+          { title: "Build broth", text: "Heat neutral oil in a large pot. Sauté garlic and ginger for 1 minute. Add broth and water, bring to a simmer. Whisk in miso paste until fully dissolved—never boil miso as it kills beneficial probiotics." },
+          { title: "Cook mushrooms & bok choy", text: "Add shiitake mushrooms to the broth and simmer 5 minutes. Add bok choy halves cut-side down and cook 3 minutes until stems are just tender but still vibrant green." },
+          { title: "Cook noodles", text: "Cook noodles in a separate pot of boiling water according to package directions. Drain well. (Cooking separately prevents them from clouding the broth.)" },
+          { title: "Assemble bowls", text: "Divide noodles among deep bowls. Ladle hot broth with vegetables over the top. Halve the soft-boiled eggs and place on top. Finish with sesame oil, spring onions, togarashi, and nori." }
+        ]
+      },
+      {
+        category: "Protein Main", icon: "🍗", name: "Teriyaki Salmon Bowl",
+        description: "Glazed salmon, steamed broccoli, pickled ginger, sesame seeds & brown rice",
+        cal: 440, tags: ["Omega-3", "High Protein"], servings: 4,
+        ingredients: ["4 salmon fillets (150g each)","2 cups brown rice","2 heads broccoli, cut into florets","4 tbsp soy sauce","2 tbsp mirin","1 tbsp honey","1 tbsp rice vinegar","2 tsp sesame oil","2 tsp cornstarch + 1 tbsp water","2 tbsp sesame seeds","4 tbsp pickled ginger","2 spring onions, sliced","1 avocado, sliced"],
+        steps: [
+          { title: "Cook rice", text: "Cook brown rice according to package directions (usually 30–35 minutes). Fluff and keep warm." },
+          { title: "Make teriyaki glaze", text: "In a small saucepan, combine soy sauce, mirin, honey, and rice vinegar. Bring to a simmer over medium heat. Mix cornstarch with water and whisk into the sauce. Simmer 2 minutes until glossy and thick enough to coat a spoon." },
+          { title: "Glaze & bake salmon", text: "Place salmon fillets on a lined baking sheet, skin-side down. Brush generously with teriyaki glaze. Bake at 200°C (390°F) for 12–15 minutes, brushing with more glaze halfway through." },
+          { title: "Steam broccoli", text: "Steam broccoli florets over boiling water for 4–5 minutes until bright green and tender-crisp. Season with a pinch of salt and a drizzle of sesame oil." },
+          { title: "Build bowls", text: "Scoop rice into bowls. Place salmon fillet alongside broccoli. Add avocado slices, pickled ginger, and spring onions. Drizzle any remaining glaze over the bowl and sprinkle sesame seeds." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["½ head cauliflower","1 head broccoli ×2","4 baby bok choy","2 mangoes","4 mandarin oranges","4 avocados","2 large cucumbers","Red cabbage (small)","Green cabbage (small)","6 carrots","200g shiitake mushrooms","Spring onions (bunch)","Fresh ginger (large knob)","8 cloves garlic","4 limes","Fresh cilantro (bunch)"],
+      "Protein & Dairy": ["4 salmon fillets (150g each)","8 eggs","2 cups edamame (frozen)"],
+      "Grains & Noodles": ["3 cups brown rice","400g buckwheat soba noodles","300g ramen or udon noodles"],
+      "Pantry": ["White miso paste","Tamari / soy sauce","Sesame oil","Rice vinegar","Mirin","Honey or maple syrup","Cornstarch","Sesame seeds","Toasted sliced almonds","Togarashi or chili flakes","Nori sheets","Pickled ginger (jar)","Vegetable broth (1.5 liters)","Neutral oil (e.g. sunflower)"]
+    }
+  },
+  {
+    id: 3, name: "Latin Fresh", theme: "Vibrant & bold",
+    color: "#A8301E", bg: "#FFF3F1", light: "#FFE6E2", emoji: "🌶️",
+    dishes: [
+      {
+        category: "Rice Dish", icon: "🍚", name: "Arroz Verde con Pollo",
+        description: "Cilantro-spinach green rice, roasted chicken thighs, pepitas & avocado crema",
+        cal: 410, tags: ["High Protein", "Iron Rich"], servings: 4,
+        ingredients: ["4 bone-in chicken thighs","2 cups long-grain white rice","3 cups chicken broth","2 cups fresh spinach","1 cup fresh cilantro","1 green chili (poblano or jalapeño)","1 onion, chopped","4 cloves garlic","2 tbsp olive oil","½ cup toasted pepitas","2 avocados","½ cup Greek yogurt","1 lime","Salt & pepper"],
+        steps: [
+          { title: "Season & sear chicken", text: "Season chicken thighs generously with salt, pepper, and cumin. Heat oil in a heavy oven-safe pan over medium-high. Sear skin-side down for 6–7 minutes until deeply golden. Flip and cook 2 minutes. Remove chicken and set aside." },
+          { title: "Blend green base", text: "In a blender, combine spinach, cilantro, green chili, onion, garlic, and 1 cup broth. Blend until completely smooth and bright green." },
+          { title: "Cook green rice", text: "In the same pan, add dry rice and toast for 2 minutes. Pour in the green mixture plus remaining broth. Stir, season with salt, and bring to a boil." },
+          { title: "Roast together", text: "Nestle the seared chicken thighs on top of the rice. Transfer pan to oven at 190°C (375°F). Cook 30 minutes until chicken is cooked through and rice has absorbed all liquid." },
+          { title: "Make avocado crema & serve", text: "Blend avocados, Greek yogurt, lime juice, and salt until silky smooth. Serve rice and chicken with a generous drizzle of avocado crema and scattered pepitas." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "🍝", name: "Spicy Black Bean Fideo",
+        description: "Toasted vermicelli, black beans, roasted tomato broth, cotija & lime",
+        cal: 370, tags: ["Plant Protein", "Fiber Rich"], servings: 4,
+        ingredients: ["300g thin vermicelli noodles, broken into 3cm pieces","2 cans (400g each) black beans, drained","4 large tomatoes","1 dried ancho chili (or 1 tsp chili powder)","1 onion, quartered","4 cloves garlic (unpeeled)","3 cups vegetable broth","2 tbsp olive oil","100g cotija cheese (or feta)","2 limes","Fresh cilantro","1 tsp cumin","Salt"],
+        steps: [
+          { title: "Char the base", text: "Place whole tomatoes, quartered onion, and unpeeled garlic on a dry comal or heavy skillet. Char on all sides over high heat, turning with tongs, about 8–10 minutes. Peel garlic." },
+          { title: "Blend the broth", text: "Remove stem and seeds from ancho chili. Blend charred tomatoes, onion, peeled garlic, ancho chili, cumin, and 1 cup broth until completely smooth. Season with salt." },
+          { title: "Toast the fideo", text: "Heat olive oil in a wide, deep pan over medium heat. Add broken vermicelli and stir constantly for 3–4 minutes until evenly golden-brown. Watch carefully—they burn quickly." },
+          { title: "Simmer in broth", text: "Pour blended tomato sauce over toasted noodles—it will sizzle dramatically. Add remaining broth and black beans. Stir, bring to a boil, then cover and cook on low for 10–12 minutes until noodles are tender." },
+          { title: "Serve", text: "Fluff gently with a fork. Top with crumbled cotija, fresh cilantro, and a big squeeze of lime juice at the table." }
+        ]
+      },
+      {
+        category: "Salad", icon: "🥗", name: "Jicama & Mango Slaw",
+        description: "Jicama, mango, red cabbage, pepitas, chile-lime dressing & fresh mint",
+        cal: 220, tags: ["Vitamin A", "Antioxidant"], servings: 4,
+        ingredients: ["1 medium jicama, peeled and julienned","2 ripe mangoes, julienned","¼ red cabbage, finely shredded","½ cup pepitas, toasted","½ cup fresh mint leaves","¼ cup fresh cilantro","3 tbsp lime juice","1 tbsp olive oil","1 tsp chili powder (or Tajín)","1 tsp honey","½ tsp salt"],
+        steps: [
+          { title: "Prep jicama & mango", text: "Peel jicama with a sharp knife (the skin is tough—use a vegetable peeler or knife). Cut into thin matchsticks. Peel mangoes and slice into similar-sized matchsticks." },
+          { title: "Shred cabbage", text: "Finely shred red cabbage as thin as possible using a mandoline or sharp knife. The thinner, the better—it should almost melt into the salad." },
+          { title: "Toast pepitas", text: "Toast pepitas in a dry skillet over medium heat for 3–4 minutes until they begin to pop and turn golden. Cool and toss with a pinch of salt and chili powder." },
+          { title: "Make dressing", text: "Whisk lime juice, olive oil, chili powder, honey, and salt together." },
+          { title: "Assemble & serve", text: "Toss jicama, mango, and cabbage with dressing in a large bowl. Add mint and cilantro leaves. Top with spiced pepitas just before serving." }
+        ]
+      },
+      {
+        category: "Soup", icon: "🍲", name: "Posole Blanco Light",
+        description: "Hominy, shredded turkey, oregano, radish, shredded cabbage & lime broth",
+        cal: 280, tags: ["Lean Protein", "Gut Health"], servings: 5,
+        ingredients: ["500g turkey breast","2 cans (400g each) hominy, drained","6 cups chicken or turkey broth","1 white onion, halved","6 cloves garlic","2 tsp dried Mexican oregano","1 tsp cumin","Salt & pepper","To serve: sliced radishes, shredded green cabbage","Dried chili flakes, lime wedges, dried oregano, tostadas"],
+        steps: [
+          { title: "Poach the turkey", text: "Place turkey breast in a large pot with onion halves, garlic, oregano, cumin, salt, and broth. Bring to a boil, then reduce heat and simmer gently for 25–30 minutes until cooked through." },
+          { title: "Shred turkey", text: "Remove turkey from broth and let cool 5 minutes. Shred into generous chunks using two forks. Discard onion halves." },
+          { title: "Add hominy", text: "Return broth to a gentle simmer. Add drained hominy and cook for 10 minutes until heated through and beginning to soften further. Adjust seasoning with salt and pepper." },
+          { title: "Return turkey", text: "Add shredded turkey back to the pot. Simmer together for 5 minutes. The broth should taste deeply savory—add more salt or oregano if needed." },
+          { title: "Serve with garnishes", text: "Ladle into large bowls. Each person adds their own garnishes at the table: radishes, shredded cabbage, chili flakes, and a good squeeze of lime. Serve tostadas on the side." }
+        ]
+      },
+      {
+        category: "Protein Main", icon: "🌮", name: "Grilled Fish Tacos",
+        description: "Mahi-mahi, corn tortillas, pineapple salsa, avocado & chipotle slaw",
+        cal: 390, tags: ["Omega-3", "Gluten-Free"], servings: 4,
+        ingredients: ["600g mahi-mahi fillets","12 small corn tortillas","½ pineapple, diced small","1 red onion, finely diced","1 jalapeño, minced","½ cup cilantro, chopped","2 limes","2 avocados","¼ red cabbage, shredded","3 tbsp Greek yogurt","1 tbsp chipotle in adobo sauce (minced)","2 tbsp olive oil","1 tsp cumin","1 tsp smoked paprika","Salt"],
+        steps: [
+          { title: "Make pineapple salsa", text: "Combine diced pineapple, red onion (save some for chipotle slaw), jalapeño, cilantro, and lime juice. Season with salt. Let sit at least 15 minutes for flavors to meld." },
+          { title: "Make chipotle slaw", text: "Shred red cabbage finely. Mix Greek yogurt with chipotle in adobo and lime juice. Toss with cabbage and season with salt. Refrigerate until serving." },
+          { title: "Season & grill fish", text: "Cut mahi-mahi into 4cm chunks. Toss with olive oil, cumin, smoked paprika, and salt. Grill on a hot grill or grill pan for 2–3 minutes per side. Don't move the fish until it releases naturally from the grill." },
+          { title: "Warm tortillas", text: "Char each corn tortilla directly over a gas flame for 30 seconds per side, or in a hot dry pan until flexible with some char spots. Keep warm in a folded towel." },
+          { title: "Assemble tacos", text: "Smash avocado onto each tortilla. Add grilled fish, a spoonful of pineapple salsa, and chipotle slaw. Serve immediately with extra lime wedges." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["1 medium jicama","4 mangoes","½ pineapple","1 head red cabbage","1 head green cabbage","2 red onions","2 white onions","Fresh spinach (bag)","6 large tomatoes","6 radishes","6 avocados","2 jalapeños","1 poblano or green chili","Cilantro (2 bunches)","Fresh mint (bunch)","6 limes","10 cloves garlic"],
+      "Protein": ["4 bone-in chicken thighs","600g mahi-mahi fillets","500g turkey breast"],
+      "Grains & Legumes": ["2 cups long-grain white rice","300g thin vermicelli","12 small corn tortillas","2 cans black beans","2 cans hominy"],
+      "Dairy & Cheese": ["Greek yogurt (small tub)","100g cotija cheese or feta"],
+      "Pantry": ["1 dried ancho chili","1 can chipotle in adobo","Pepitas (½ cup)","Cumin","Smoked paprika","Chili powder / Tajín","Mexican oregano","Olive oil","Chicken broth (2 liters)","Vegetable broth (1 liter)","Tostadas"]
+    }
+  },
+  {
+    id: 4, name: "Nordic Clean", theme: "Pure & nourishing",
+    color: "#2E5F80", bg: "#F0F6FB", light: "#DFF0F8", emoji: "❄️",
+    dishes: [
+      {
+        category: "Rice Dish", icon: "🍚", name: "Barley & Beet Risotto",
+        description: "Pearl barley, roasted beets, goat cheese, dill & vegetable broth",
+        cal: 350, tags: ["Heart Healthy", "Antioxidant"], servings: 4,
+        ingredients: ["1.5 cups pearl barley","4 medium beets, scrubbed","5–6 cups vegetable broth (warm)","1 onion, finely diced","3 cloves garlic, minced","½ cup dry white wine","100g goat cheese, crumbled","2 tbsp butter","2 tbsp olive oil","Fresh dill, chopped","1 lemon, zested","Salt & pepper","Honey to drizzle"],
+        steps: [
+          { title: "Roast beets", text: "Wrap each beet individually in foil with a drizzle of olive oil and pinch of salt. Roast at 200°C (390°F) for 50–60 minutes until a knife slides in easily. Cool, peel (the skins slip off), and dice into small cubes." },
+          { title: "Start the barley", text: "Heat butter and olive oil in a wide, heavy pot over medium heat. Sauté onion for 8 minutes until very soft. Add garlic and barley and stir for 2 minutes." },
+          { title: "Deglaze & add broth", text: "Pour in white wine and stir until absorbed. Begin adding warm broth one ladle at a time, stirring frequently and allowing each addition to absorb before adding more. This takes 35–40 minutes total." },
+          { title: "Add beets", text: "When barley is tender with a slight chew, fold in diced roasted beets. The entire risotto will turn a stunning magenta color. Season generously with salt and pepper." },
+          { title: "Finish & serve", text: "Remove from heat and stir in lemon zest. Serve immediately in warm bowls topped with crumbled goat cheese, fresh dill, and a tiny drizzle of honey." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "🍝", name: "Rye Pasta with Smoked Salmon",
+        description: "Rye penne, smoked salmon, capers, crème fraîche, dill & lemon zest",
+        cal: 430, tags: ["Omega-3", "High Protein"], servings: 4,
+        ingredients: ["400g rye penne (or whole wheat penne)","200g smoked salmon, torn into pieces","4 tbsp capers, drained","200ml crème fraîche","1 shallot, finely minced","2 cloves garlic, minced","1 lemon, zested & juiced","2 tbsp butter","Fresh dill (large bunch)","2 tbsp fresh chives, snipped","Black pepper (generous amount)","Salt","Rocket/arugula leaves to serve"],
+        steps: [
+          { title: "Cook pasta", text: "Bring a large pot of generously salted water to a boil. Cook rye penne until al dente, per package instructions. Reserve 1 full cup of pasta cooking water before draining." },
+          { title: "Build sauce base", text: "In a large skillet over medium heat, melt butter. Sauté shallot for 3 minutes until soft. Add garlic and cook 1 minute. Reduce heat to low." },
+          { title: "Add crème fraîche", text: "Stir crème fraîche into the skillet. Do not let it boil—keep on a gentle simmer. Add lemon zest, lemon juice, and half the dill. Season with a little salt." },
+          { title: "Combine pasta", text: "Add drained pasta to the sauce with a splash of pasta water. Toss gently over low heat for 1–2 minutes until the sauce coats every piece. Add more pasta water if needed for a silky consistency." },
+          { title: "Add salmon & serve", text: "Remove from heat. Fold in smoked salmon pieces, capers, and remaining dill. The residual heat will gently warm the salmon without overcooking it. Serve topped with chives, generous black pepper, and a handful of rocket." }
+        ]
+      },
+      {
+        category: "Salad", icon: "🥗", name: "Warm Root Vegetable Salad",
+        description: "Roasted turnips, carrots, lentils, mustard vinaigrette & toasted walnuts",
+        cal: 300, tags: ["Fiber Rich", "Vegan"], servings: 4,
+        ingredients: ["3 medium turnips, diced 2cm","4 large carrots, cut into batons","2 parsnips, diced","1.5 cups green or puy lentils","½ cup walnuts","3 cups vegetable broth","3 tbsp olive oil","2 tbsp whole grain mustard","2 tbsp apple cider vinegar","1 tsp honey","Fresh thyme (4–5 sprigs)","Fresh flat-leaf parsley","Salt & pepper"],
+        steps: [
+          { title: "Roast root vegetables", text: "Toss turnips, carrots, and parsnips with 2 tbsp olive oil, fresh thyme leaves, salt, and pepper. Spread on a baking sheet in a single layer. Roast at 220°C (430°F) for 30–35 minutes, turning once, until caramelized and tender." },
+          { title: "Cook lentils", text: "Rinse lentils well. Combine with vegetable broth in a saucepan. Bring to a boil, then simmer uncovered for 20–25 minutes until just tender but still holding their shape. Drain, season while warm." },
+          { title: "Toast walnuts", text: "Spread walnuts on a baking sheet. Roast at 180°C (355°F) for 8–10 minutes until fragrant and darkened. Cool and roughly chop." },
+          { title: "Make mustard vinaigrette", text: "Whisk together whole grain mustard, apple cider vinegar, remaining 1 tbsp olive oil, honey, salt, and pepper." },
+          { title: "Compose & serve", text: "Toss warm lentils with half the dressing in a serving bowl. Pile roasted vegetables on top. Scatter chopped walnuts and parsley. Drizzle remaining dressing. Serve warm or at room temperature." }
+        ]
+      },
+      {
+        category: "Soup", icon: "🍲", name: "Nettle & Potato Soup",
+        description: "Wild nettle, potato, leek, oat cream, nutmeg & rye bread croutons",
+        cal: 260, tags: ["Iron Rich", "Immune Boost"], servings: 4,
+        ingredients: ["200g fresh young nettles (or substitute baby spinach)","600g floury potatoes, peeled & diced","2 large leeks, white & light green parts, sliced","1 liter vegetable broth","200ml oat cream (or regular cream)","2 tbsp butter","2 cloves garlic","¼ tsp grated nutmeg","Salt & white pepper","For croutons: 4 slices rye bread, 1 tbsp olive oil, 1 tsp caraway seeds"],
+        steps: [
+          { title: "Handle nettles safely", text: "Wear rubber gloves! Blanch nettles in boiling water for 1 minute to neutralize the sting. Drain and cool under cold water. Squeeze dry—they're now completely safe to handle. (Substitute with baby spinach to skip this step.)" },
+          { title: "Make rye croutons", text: "Cut rye bread into 1cm cubes. Toss with olive oil and caraway seeds. Spread on a baking sheet and bake at 180°C (355°F) for 12–15 minutes until crispy. Set aside." },
+          { title: "Build soup base", text: "Melt butter in a large pot over medium heat. Sauté leeks for 8 minutes until very soft and sweet. Add garlic and cook 1 minute. Add potatoes and broth. Bring to a boil and cook 15 minutes until potatoes are completely tender." },
+          { title: "Add greens & blend", text: "Add blanched nettles (or spinach) to the pot. Simmer 2 minutes. Use an immersion blender to blend completely smooth. Stir in oat cream. Season with salt, white pepper, and nutmeg." },
+          { title: "Serve", text: "Ladle into bowls. Finish with a swirl of oat cream, freshly grated nutmeg, and a generous handful of rye bread croutons." }
+        ]
+      },
+      {
+        category: "Protein Main", icon: "🐟", name: "Gravlax Trout Platter",
+        description: "Cured trout, pickled cucumber, rye crispbread, mustard sauce & egg",
+        cal: 370, tags: ["Omega-3", "Probiotic"], servings: 4,
+        ingredients: ["600g fresh trout fillet (skin on, pin bones removed)","For cure: 3 tbsp coarse salt, 2 tbsp sugar, 1 tbsp white peppercorns (crushed), large bunch fresh dill","For pickled cucumber: 1 large cucumber, 3 tbsp white wine vinegar, 1 tbsp sugar, ½ tsp salt, 1 tsp dill","For mustard sauce: 3 tbsp Dijon mustard, 1 tbsp honey, 2 tbsp apple cider vinegar, 4 tbsp neutral oil, fresh dill","To serve: 4 rye crispbreads, 4 eggs (hard-boiled), lemon wedges, fresh dill"],
+        steps: [
+          { title: "Cure the trout (24h ahead)", text: "Mix coarse salt, sugar, and crushed peppercorns. Lay trout skin-side down. Spread cure mixture over the flesh. Cover with a thick layer of fresh dill fronds. Wrap tightly in plastic wrap, place on a tray, and weight down with a heavy plate. Refrigerate 24–36 hours, turning once halfway." },
+          { title: "Pickle the cucumber", text: "Thinly slice cucumber (a mandoline is ideal). Combine vinegar, sugar, and salt in a bowl, stir until dissolved. Add cucumber and dill. Refrigerate at least 2 hours—overnight is better." },
+          { title: "Make mustard sauce", text: "Whisk Dijon mustard, honey, and vinegar together. Slowly drizzle in oil while whisking constantly to emulsify into a thick, glossy sauce. Stir in chopped fresh dill. Season with a pinch of salt." },
+          { title: "Slice the trout", text: "Brush the dill and cure off the trout. With a sharp, flexible knife, slice very thin diagonal slices from the fillet, keeping the blade nearly flat and cutting away from the skin." },
+          { title: "Compose the platter", text: "Arrange sliced cured trout on a large serving board. Add piles of pickled cucumber, halved hard-boiled eggs, and rye crispbreads. Serve mustard sauce in a small bowl alongside with lemon wedges and extra dill." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["4 medium beets","3 medium turnips","4 large carrots","2 parsnips","600g floury potatoes","2 large leeks","1 shallot","1 large cucumber","200g fresh nettles (or baby spinach)","Dill (3 large bunches)","Fresh thyme","Fresh chives","Fresh flat-leaf parsley","1 onion","7 cloves garlic","3 lemons"],
+      "Protein": ["600g fresh trout fillet","200g smoked salmon","8 eggs"],
+      "Dairy": ["100g goat cheese","200ml crème fraîche","200ml oat cream","Butter"],
+      "Grains & Legumes": ["1.5 cups pearl barley","400g rye penne or whole wheat penne","4 slices rye bread","4 rye crispbreads","1.5 cups green or puy lentils"],
+      "Pantry": ["Dry white wine (small bottle)","Capers (jar)","Whole grain mustard","Dijon mustard","Apple cider vinegar","White wine vinegar","Honey","Walnuts (½ cup)","Nutmeg","Caraway seeds","White peppercorns","Coarse salt","Vegetable broth (2 liters)","Olive oil","Neutral oil"]
+    }
+  },
+  {
+    id: 5, name: "Plant Power", theme: "100% whole food",
+    color: "#5C3E88", bg: "#F5F0FB", light: "#EDE4FA", emoji: "🌱",
+    dishes: [
+      {
+        category: "Rice Dish", icon: "🍚", name: "Rainbow Buddha Bowl",
+        description: "Wild rice, roasted sweet potato, purple cabbage, avocado & tahini drizzle",
+        cal: 420, tags: ["Vegan", "Complete Meal"], servings: 4,
+        ingredients: ["1.5 cups wild rice blend","2 large sweet potatoes, diced 2cm","¼ purple cabbage, shredded","2 avocados, sliced","1 cup cherry tomatoes, halved","2 cups baby spinach","½ cup chickpeas, roasted","For tahini dressing: 4 tbsp tahini, 2 tbsp lemon juice","1 clove garlic (minced), 3 tbsp warm water","1 tbsp olive oil","Salt","2 tbsp hemp seeds","1 tbsp olive oil (for sweet potato)"],
+        steps: [
+          { title: "Cook wild rice", text: "Rinse wild rice blend. Cook in 3 cups salted water: bring to a boil, reduce to lowest heat, cover, and cook 45–50 minutes until tender and beginning to burst open. Fluff with a fork." },
+          { title: "Roast sweet potato", text: "Toss diced sweet potato with olive oil, salt, and a pinch of cinnamon or cumin. Spread on a baking sheet. Roast at 210°C (410°F) for 25–30 minutes, turning once, until caramelized." },
+          { title: "Massage cabbage", text: "Place shredded purple cabbage in a bowl with a pinch of salt and 1 tsp lemon juice. Use your hands to massage firmly for 2–3 minutes until it softens and turns bright purple-pink." },
+          { title: "Make tahini dressing", text: "Whisk together tahini, lemon juice, minced garlic, olive oil, and warm water until smooth and pourable. Season with salt. Add more water if too thick—it should flow off a spoon." },
+          { title: "Build bowls", text: "Scoop wild rice into bowls as the base. Arrange roasted sweet potato, massaged cabbage, avocado, cherry tomatoes, and spinach in separate sections over the rice. Drizzle tahini dressing over everything and sprinkle with hemp seeds." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "🍝", name: "Zucchini Noodles Marinara",
+        description: "Spiralized zucchini, chunky tomato sauce, walnut 'meat', basil & nutritional yeast",
+        cal: 280, tags: ["Raw", "Low Carb"], servings: 4,
+        ingredients: ["6 medium zucchini","For walnut 'meat': 1.5 cups walnuts, 1 tbsp tamari, 1 tsp cumin, 1 tsp smoked paprika, ½ tsp garlic powder","For marinara: 2 cans (400g) crushed tomatoes, 4 cloves garlic, 1 onion, 2 tbsp olive oil","1 tsp dried oregano","1 tsp dried basil","Pinch of chili flakes","Salt & pepper","Fresh basil leaves (large bunch)","4 tbsp nutritional yeast","1 lemon"],
+        steps: [
+          { title: "Make walnut 'meat'", text: "Pulse walnuts in a food processor until crumbly but not paste—about 8–10 short pulses. Toss with tamari, cumin, smoked paprika, and garlic powder. Toast in a dry pan over medium heat for 5 minutes, stirring, until fragrant and slightly darker. Set aside." },
+          { title: "Cook marinara", text: "Heat olive oil in a saucepan. Sauté onion 7 minutes until soft. Add garlic and cook 1 minute. Add crushed tomatoes, oregano, dried basil, and chili flakes. Simmer uncovered for 20 minutes until thick and rich. Season generously." },
+          { title: "Spiralize zucchini", text: "Use a spiralizer to create long zucchini noodles (or use a vegetable peeler for ribbons). Sprinkle with salt and let sit 10 minutes. Pat dry with a paper towel to remove excess moisture—this prevents watery noodles." },
+          { title: "Quick-wilt noodles", text: "Heat a large pan over high heat. Add zucchini noodles and toss for just 60–90 seconds—enough to warm through and slightly soften but still hold their shape. Do not overcook." },
+          { title: "Plate & serve", text: "Divide zucchini noodles among bowls. Spoon marinara sauce over the top. Add a generous scoop of walnut 'meat.' Sprinkle nutritional yeast over everything and finish with fresh basil and a squeeze of lemon." }
+        ]
+      },
+      {
+        category: "Salad", icon: "🥗", name: "Massaged Kale Power Salad",
+        description: "Kale, roasted chickpeas, hemp seeds, avocado, beets & lemon-tahini dressing",
+        cal: 310, tags: ["Calcium", "Iron Rich"], servings: 4,
+        ingredients: ["2 large bunches curly kale, stems removed, leaves torn","1 can (400g) chickpeas, drained","2 medium beets (raw or pre-cooked), grated","2 avocados, diced","4 tbsp hemp seeds","¼ cup sunflower seeds, toasted","For dressing: 3 tbsp tahini, 3 tbsp lemon juice, 1 tbsp apple cider vinegar","1 clove garlic, grated","1 tbsp maple syrup","4 tbsp warm water","Salt"],
+        steps: [
+          { title: "Crispy roasted chickpeas", text: "Pat chickpeas completely dry (critical for crispiness). Toss with 1 tbsp olive oil, salt, and smoked paprika. Roast at 220°C (430°F) for 25–30 minutes, shaking the pan halfway, until golden and crunchy." },
+          { title: "Massage the kale", text: "Place torn kale in a large bowl. Drizzle with 1 tsp olive oil and a pinch of salt. Use both hands to firmly massage for 3–5 minutes until the kale darkens, reduces in volume by half, and becomes tender. This breaks down the bitterness." },
+          { title: "Make tahini dressing", text: "Whisk tahini, lemon juice, apple cider vinegar, grated garlic, maple syrup, and warm water until smooth. Taste and adjust—it should be tangy, creamy, and slightly sweet. Season with salt." },
+          { title: "Grate beets", text: "If using raw beets, peel and grate on the large holes of a box grater. (Wear gloves to avoid staining.) If pre-cooked, dice into small cubes." },
+          { title: "Build the salad", text: "Pour half the dressing over massaged kale and toss well—the kale absorbs dressing beautifully. Arrange grated beets, avocado, and roasted chickpeas on top. Sprinkle hemp seeds and sunflower seeds. Drizzle remaining dressing." }
+        ]
+      },
+      {
+        category: "Soup", icon: "🍲", name: "Smoky White Bean Stew",
+        description: "Cannellini beans, smoked paprika, kale, tomatoes, rosemary & crusty sourdough",
+        cal: 330, tags: ["High Fiber", "Plant Protein"], servings: 5,
+        ingredients: ["2 cans (400g each) cannellini beans","1 can (400g) crushed tomatoes","1 large bunch kale, stems removed & chopped","1 onion, diced","4 cloves garlic, sliced","2 tsp smoked paprika","1 tsp sweet paprika","2 sprigs fresh rosemary","1 tsp dried thyme","4 cups vegetable broth","2 tbsp olive oil","1 tsp red wine vinegar","Salt & black pepper","4–5 thick slices sourdough bread","Extra olive oil to finish"],
+        steps: [
+          { title: "Build the flavor base", text: "Heat olive oil in a large, heavy pot or Dutch oven over medium heat. Sauté onion for 8–10 minutes until deeply golden and sweet. Add garlic, smoked paprika, sweet paprika, rosemary sprigs, and thyme. Stir 1–2 minutes until the paprika is fragrant." },
+          { title: "Add tomatoes & beans", text: "Pour in crushed tomatoes and cook for 5 minutes, letting the tomatoes reduce slightly. Add both cans of cannellini beans (with their liquid for extra body) and vegetable broth. Stir well." },
+          { title: "Simmer & thicken", text: "Bring to a boil, then reduce to a gentle simmer. Use a potato masher or wooden spoon to roughly mash about ¼ of the beans directly in the pot—this naturally thickens the stew without flour. Simmer 20 minutes." },
+          { title: "Add kale", text: "Stir in chopped kale. It will seem like too much—push it down into the liquid. Cover and cook 8–10 minutes until completely wilted and tender. Remove rosemary sprigs. Season with salt, pepper, and a splash of red wine vinegar." },
+          { title: "Toast bread & serve", text: "Brush sourdough slices with olive oil and toast under the broiler or in a pan until golden. Ladle stew into deep bowls. Float a slice of toasted sourdough on top and finish with a generous pour of good olive oil." }
+        ]
+      },
+      {
+        category: "Protein Main", icon: "🫘", name: "Crispy Tofu & Broccoli",
+        description: "Pressed tofu, charred broccolini, quinoa, miso glaze & sesame gremolata",
+        cal: 400, tags: ["Complete Protein", "Calcium"], servings: 4,
+        ingredients: ["2 blocks (400g each) extra-firm tofu","2 heads broccolini or broccoli","1.5 cups quinoa","3 cups vegetable broth","For miso glaze: 3 tbsp white miso, 2 tbsp mirin, 1 tbsp soy sauce, 1 tbsp sesame oil, 1 tbsp rice vinegar, 1 tsp honey","For gremolata: 4 tbsp sesame seeds (mixed), zest of 1 lemon, 2 tbsp parsley, 1 clove garlic","2 tbsp neutral oil","Cornstarch (2 tbsp for coating tofu)"],
+        steps: [
+          { title: "Press tofu", text: "Drain tofu and wrap each block in a clean kitchen towel. Place on a plate and stack heavy books or a cast iron pan on top. Press for at least 30 minutes—overnight is ideal. The drier the tofu, the crispier the result." },
+          { title: "Cook quinoa", text: "Rinse quinoa in a fine mesh strainer until water runs clear (removes bitter saponins). Cook in vegetable broth using a 1:2 ratio. Bring to a boil, cover, and simmer 15 minutes. Remove from heat and let steam, covered, 5 more minutes. Fluff with a fork." },
+          { title: "Make miso glaze", text: "Whisk together miso, mirin, soy sauce, sesame oil, rice vinegar, and honey until completely smooth. Set aside half for serving." },
+          { title: "Crisp the tofu", text: "Cut pressed tofu into 2cm cubes. Toss with cornstarch, salt, and pepper. Heat neutral oil in a large skillet over high heat until shimmering. Add tofu in a single layer—do not crowd. Cook 3–4 minutes per side until deeply golden and crispy. In the last minute, pour half the miso glaze over and toss to coat and caramelize." },
+          { title: "Char broccolini & make gremolata", text: "Toss broccolini with oil and salt. Char in a very hot grill pan or under the broiler for 4–5 minutes until stems are tender and tips are blackened. Make gremolata: combine sesame seeds, lemon zest, parsley, and minced garlic. Serve quinoa in bowls topped with tofu, broccolini, reserved glaze, and sesame gremolata." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["2 large sweet potatoes","6 medium zucchini","2 heads broccolini or broccoli","3 bunches curly kale","1 head purple cabbage","4 medium beets","8 avocados","1 cup cherry tomatoes","Baby spinach (bag)","Fresh basil (2 bunches)","Fresh parsley","Fresh rosemary","3 onions","5 cloves garlic","3 lemons"],
+      "Protein": ["2 blocks extra-firm tofu (400g each)","2 cans (400g) chickpeas","2 cans (400g) cannellini beans"],
+      "Grains & Legumes": ["1.5 cups wild rice blend","1.5 cups quinoa","4–5 thick slices sourdough bread"],
+      "Pantry": ["2 cans (400g) crushed tomatoes","Tahini (large jar)","Nutritional yeast","Hemp seeds","Sunflower seeds","Walnuts (1.5 cups)","Smoked paprika (large jar)","Sweet paprika","Cumin","Dried oregano","Dried thyme","White miso paste","Mirin","Soy sauce / tamari","Sesame oil","Rice vinegar","Apple cider vinegar","Maple syrup","Cornstarch","Sesame seeds (mixed)","Olive oil","Neutral oil","Vegetable broth (2 liters)"]
+    }
+  }
+];
+
+const TAB = { MENU: "menu", COST: "cost", SHOPPING: "shopping", COOKBOOK: "cookbook" };
+
+const catColors = {
+  "Rice Dish": "#C47B1A", "Pasta Dish": "#A8301E",
+  "Salad": "#3D7A50", "Soup": "#2E5F80", "Protein Main": "#5C3E88"
+};
+
+function App() {
+  const [activeMenu, setActiveMenu] = useState(0);
+  const [activeTab, setActiveTab] = useState(TAB.MENU);
+  const [expandedDish, setExpandedDish] = useState(null);
+  const [checkedItems, setCheckedItems] = useState({});
+
+  const menu = menus[activeMenu];
+  const cost = costs[menu.id];
+  const toggleCheck = (key) => setCheckedItems(p => ({ ...p, [key]: !p[key] }));
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#F7F5F0", fontFamily: "'Palatino Linotype','Book Antiqua',Palatino,serif" }}>
+
+      {/* HEADER */}
+      <div style={{ background: "#1C1C1C", color: "#F0EBE1", padding: "28px 24px 20px", textAlign: "center" }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.35em", color: "#8A8070", textTransform: "uppercase", marginBottom: 8 }}>World Kitchen · Healthy Living</div>
+        <h1 style={{ margin: "0 0 6px", fontSize: "clamp(22px,4.5vw,38px)", fontWeight: 400 }}>5 Healthy World Menus</h1>
+        <p style={{ margin: 0, fontSize: 13, color: "#7A7060", fontStyle: "italic" }}>Complete cookbook · Shopping lists · Coles & Woolworths cost estimates · 4–5 servings per meal</p>
+      </div>
+
+      {/* MENU TABS */}
+      <div style={{ display: "flex", overflowX: "auto", background: "#FAFAF7", borderBottom: "1px solid #E0DDD5", scrollbarWidth: "none" }}>
+        {menus.map((m, i) => (
+          <button key={m.id} onClick={() => { setActiveMenu(i); setActiveTab(TAB.MENU); setExpandedDish(null); }}
+            style={{ flex: "0 0 auto", minWidth: 110, padding: "14px 16px", border: "none", cursor: "pointer", background: activeMenu === i ? m.bg : "transparent", borderBottom: activeMenu === i ? `3px solid ${m.color}` : "3px solid transparent", transition: "all 0.2s", textAlign: "center" }}>
+            <div style={{ fontSize: 20, marginBottom: 3 }}>{m.emoji}</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: activeMenu === i ? m.color : "#AAA" }}>Menu {m.id}</div>
+            <div style={{ fontSize: 11, color: activeMenu === i ? m.color : "#BBB", marginTop: 2, fontStyle: "italic" }}>{m.name}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* SECTION TABS */}
+      <div style={{ display: "flex", background: menu.bg, borderBottom: `2px solid ${menu.color}20`, padding: "0 16px", overflowX: "auto", scrollbarWidth: "none" }}>
+        {[
+          { id: TAB.MENU, label: "📋 Menu Overview" },
+          { id: TAB.COST, label: "💰 Cost Estimate" },
+          { id: TAB.SHOPPING, label: "🛒 Shopping List" },
+          { id: TAB.COOKBOOK, label: "👨‍🍳 Cookbook" }
+        ].map(t => (
+          <button key={t.id} onClick={() => setActiveTab(t.id)}
+            style={{ padding: "12px 16px", border: "none", background: "transparent", cursor: "pointer", borderBottom: activeTab === t.id ? `3px solid ${menu.color}` : "3px solid transparent", color: activeTab === t.id ? menu.color : "#888", fontWeight: activeTab === t.id ? 700 : 400, fontSize: 13, fontFamily: "inherit", transition: "all 0.15s", marginBottom: -2, whiteSpace: "nowrap" }}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "24px 16px 60px" }}>
+
+        {/* ── MENU OVERVIEW ── */}
+        {activeTab === TAB.MENU && (
+          <div>
+            <div style={{ background: menu.light, borderRadius: 14, padding: "20px 24px", marginBottom: 20, borderLeft: `5px solid ${menu.color}`, display: "flex", gap: 16, alignItems: "center" }}>
+              <div style={{ fontSize: 44 }}>{menu.emoji}</div>
+              <div>
+                <h2 style={{ margin: "0 0 4px", fontSize: 22, fontWeight: 400 }}>{menu.name}</h2>
+                <p style={{ margin: 0, fontStyle: "italic", color: "#888", fontSize: 13 }}>{menu.theme} · {menu.dishes.reduce((s, d) => s + d.cal, 0)} kcal total</p>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {menu.dishes.map((dish, i) => (
+                <div key={i} style={{ background: "#FFF", borderRadius: 12, padding: "18px 20px", border: "1px solid #EBEBEB", borderLeft: `4px solid ${catColors[dish.category]}` }}>
+                  <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <span style={{ fontSize: 28 }}>{dish.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", color: catColors[dish.category], fontWeight: 700 }}>{dish.category}</div>
+                      <div style={{ fontSize: 17, fontWeight: 600, color: "#1C1C1C", margin: "3px 0 6px" }}>{dish.name}</div>
+                      <div style={{ fontSize: 13, color: "#777", fontStyle: "italic", lineHeight: 1.5, marginBottom: 10 }}>{dish.description}</div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ background: "#F0EDE8", borderRadius: 6, padding: "3px 10px", fontSize: 12, color: "#555" }}>🔥 {dish.cal} kcal</span>
+                        <span style={{ background: "#F0EDE8", borderRadius: 6, padding: "3px 10px", fontSize: 12, color: "#555" }}>👥 {dish.servings} serves</span>
+                        {dish.tags.map(tag => (
+                          <span key={tag} style={{ background: catColors[dish.category] + "15", color: catColors[dish.category], borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 20, background: "#1C1C1C", borderRadius: 12, padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+              <div>
+                <div style={{ fontSize: 10, color: "#666", letterSpacing: "0.2em", textTransform: "uppercase" }}>Daily Total</div>
+                <div style={{ fontSize: 26, color: "#F0EBE1" }}>{menu.dishes.reduce((s, d) => s + d.cal, 0)} <span style={{ fontSize: 13, color: "#666" }}>kcal</span></div>
+              </div>
+              <div style={{ display: "flex", gap: 16 }}>
+                {menu.dishes.map(d => (
+                  <div key={d.category} style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 20 }}>{d.icon}</div>
+                    <div style={{ fontSize: 11, color: "#777" }}>{d.cal}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── COST ESTIMATE ── */}
+        {activeTab === TAB.COST && (
+          <div>
+            {/* Hero */}
+            <div style={{ background: menu.color, borderRadius: 16, padding: "28px 28px 24px", marginBottom: 20, color: "#FFF", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: -20, right: -10, fontSize: 130, opacity: 0.08, lineHeight: 1 }}>{menu.emoji}</div>
+              <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", opacity: 0.75, marginBottom: 8 }}>Coles & Woolworths · Estimated Cost (AUD)</div>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 32, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 2 }}>Total menu spend</div>
+                  <div style={{ fontSize: 56, fontWeight: 300, lineHeight: 1 }}>${cost.total}</div>
+                  <div style={{ fontSize: 13, opacity: 0.7, marginTop: 6 }}>all 5 dishes · ~20 serves</div>
+                </div>
+                <div style={{ borderLeft: "1px solid rgba(255,255,255,0.25)", paddingLeft: 32 }}>
+                  <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 2 }}>Cost per serve</div>
+                  <div style={{ fontSize: 40, fontWeight: 300 }}>${cost.perServe.toFixed(2)}</div>
+                  <div style={{ fontSize: 13, opacity: 0.7, marginTop: 6 }}>per plate</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Breakdown */}
+            <div style={{ background: "#FFF", borderRadius: 14, border: "1px solid #EEEAE0", overflow: "hidden", marginBottom: 16 }}>
+              <div style={{ padding: "14px 20px", borderBottom: "1px solid #EEEAE0", background: menu.light }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: menu.color }}>Cost Breakdown by Category</div>
+              </div>
+              {cost.rows.map((row, i) => (
+                <div key={i} style={{ display: "flex", gap: 16, padding: "14px 20px", borderBottom: i < cost.rows.length - 1 ? "1px solid #F5F2EC" : "none", alignItems: "flex-start" }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#222", marginBottom: 4 }}>{row.cat}</div>
+                    <div style={{ fontSize: 12, color: "#888", lineHeight: 1.6 }}>{row.detail}</div>
+                  </div>
+                  <div style={{ flexShrink: 0, textAlign: "right", minWidth: 52 }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: menu.color }}>${row.est}</div>
+                    <div style={{ fontSize: 10, color: "#BBB", marginTop: 1 }}>est.</div>
+                  </div>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "#1C1C1C" }}>
+                <div style={{ fontSize: 12, color: "#AAA", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Total Estimated Spend</div>
+                <div style={{ fontSize: 26, color: "#F0EBE1", fontWeight: 300 }}>${cost.total}</div>
+              </div>
+            </div>
+
+            {/* Bar chart */}
+            <div style={{ background: "#FFF", borderRadius: 14, border: "1px solid #EEEAE0", padding: "20px", marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#999", marginBottom: 18 }}>Spend Distribution</div>
+              {cost.rows.map((row, i) => {
+                const pct = Math.round((row.est / cost.total) * 100);
+                return (
+                  <div key={i} style={{ marginBottom: 14 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+                      <span style={{ fontSize: 12, color: "#555" }}>{row.cat}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: menu.color }}>{pct}% · ${row.est}</span>
+                    </div>
+                    <div style={{ height: 7, background: "#F0EDE8", borderRadius: 99 }}>
+                      <div style={{ height: "100%", width: `${pct}%`, background: `linear-gradient(90deg, ${menu.color}CC, ${menu.color})`, borderRadius: 99 }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Tip */}
+            <div style={{ background: menu.light, borderRadius: 12, padding: "16px 20px", borderLeft: `4px solid ${menu.color}` }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: menu.color, marginBottom: 8 }}>💡 Budget Tip</div>
+              <p style={{ margin: 0, fontSize: 13, color: "#555", lineHeight: 1.75 }}>{cost.tip}</p>
+            </div>
+
+            <p style={{ fontSize: 11, color: "#BBB", fontStyle: "italic", textAlign: "center", marginTop: 18, lineHeight: 1.7 }}>
+              Estimates based on typical Coles & Woolworths shelf prices, AUD, May 2025. Prices vary by store, location and season. Pantry staples you already own will reduce actual spend.
+            </p>
+          </div>
+        )}
+
+        {/* ── SHOPPING LIST ── */}
+        {activeTab === TAB.SHOPPING && (
+          <div>
+            <div style={{ background: menu.light, borderRadius: 14, padding: "16px 20px", marginBottom: 20, borderLeft: `5px solid ${menu.color}` }}>
+              <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 400 }}>{menu.emoji} {menu.name} — Shopping List</h2>
+              <p style={{ margin: 0, fontSize: 12, color: "#888", fontStyle: "italic" }}>All ingredients for 5 dishes · 4–5 servings each · Tap to check off</p>
+            </div>
+            {Object.entries(menu.shopping).map(([category, items]) => (
+              <div key={category} style={{ background: "#FFF", borderRadius: 12, padding: "16px 20px", marginBottom: 14, border: "1px solid #EEEAE0" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: menu.color, marginBottom: 12, paddingBottom: 8, borderBottom: `1px solid ${menu.color}20` }}>
+                  {category === "Produce" ? "🥦 " : category.includes("Protein") || category === "Dairy" ? "🥩 " : category.includes("Grain") ? "🌾 " : category === "Dairy & Cheese" ? "🧀 " : "🫙 "}{category}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "6px 12px" }}>
+                  {items.map((item, i) => {
+                    const key = `${activeMenu}-${category}-${i}`;
+                    const checked = checkedItems[key];
+                    return (
+                      <div key={i} onClick={() => toggleCheck(key)}
+                        style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer", padding: "6px 8px", borderRadius: 8, background: checked ? menu.color + "10" : "transparent", transition: "background 0.15s" }}>
+                        <div style={{ width: 16, height: 16, borderRadius: 4, border: `2px solid ${checked ? menu.color : "#CCC"}`, background: checked ? menu.color : "transparent", flexShrink: 0, marginTop: 1, display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}>
+                          {checked && <span style={{ color: "#FFF", fontSize: 10, fontWeight: 900 }}>✓</span>}
+                        </div>
+                        <span style={{ fontSize: 13, color: checked ? "#AAA" : "#444", textDecoration: checked ? "line-through" : "none", lineHeight: 1.4 }}>{item}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── COOKBOOK ── */}
+        {activeTab === TAB.COOKBOOK && (
+          <div>
+            <div style={{ background: menu.light, borderRadius: 14, padding: "16px 20px", marginBottom: 20, borderLeft: `5px solid ${menu.color}` }}>
+              <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 400 }}>{menu.emoji} {menu.name} — Cookbook</h2>
+              <p style={{ margin: 0, fontSize: 12, color: "#888", fontStyle: "italic" }}>Step-by-step instructions for all 5 dishes</p>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {menu.dishes.map((dish, di) => {
+                const isOpen = expandedDish === di;
+                return (
+                  <div key={di} style={{ background: "#FFF", borderRadius: 14, overflow: "hidden", border: `1px solid ${isOpen ? catColors[dish.category] + "40" : "#EEEAE0"}`, boxShadow: isOpen ? `0 4px 16px ${catColors[dish.category]}18` : "none", transition: "all 0.2s" }}>
+                    <button onClick={() => setExpandedDish(isOpen ? null : di)}
+                      style={{ width: "100%", background: "transparent", border: "none", cursor: "pointer", padding: "18px 20px", display: "flex", alignItems: "center", gap: 14, textAlign: "left" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: catColors[dish.category] + "18", border: `2px solid ${catColors[dish.category]}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{dish.icon}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", color: catColors[dish.category], fontWeight: 700 }}>{dish.category}</div>
+                        <div style={{ fontSize: 16, fontWeight: 600, color: "#1C1C1C", margin: "2px 0" }}>{dish.name}</div>
+                        <div style={{ fontSize: 12, color: "#999", fontStyle: "italic" }}>{dish.servings} servings · {dish.cal} kcal · {dish.steps.length} steps</div>
+                      </div>
+                      <div style={{ fontSize: 20, color: catColors[dish.category], transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▾</div>
+                    </button>
+                    {isOpen && (
+                      <div style={{ borderTop: `1px solid ${catColors[dish.category]}20`, padding: "0 20px 20px" }}>
+                        <div style={{ marginTop: 18 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: catColors[dish.category], marginBottom: 10 }}>Ingredients ({dish.servings} servings)</div>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))", gap: "6px 12px" }}>
+                            {dish.ingredients.map((ing, i) => (
+                              <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", padding: "4px 0" }}>
+                                <span style={{ color: catColors[dish.category], fontWeight: 700, fontSize: 14, flexShrink: 0 }}>·</span>
+                                <span style={{ fontSize: 13, color: "#555", lineHeight: 1.4 }}>{ing}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div style={{ marginTop: 20 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: catColors[dish.category], marginBottom: 12 }}>Instructions</div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                            {dish.steps.map((step, si) => (
+                              <div key={si} style={{ display: "flex", gap: 14, padding: "12px 14px", background: si % 2 === 0 ? "#FAFAF7" : "#FFF", borderRadius: 10, border: "1px solid #F0EDE8" }}>
+                                <div style={{ width: 28, height: 28, borderRadius: "50%", background: catColors[dish.category], color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{si + 1}</div>
+                                <div>
+                                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1C1C1C", marginBottom: 4 }}>{step.title}</div>
+                                  <div style={{ fontSize: 13, color: "#666", lineHeight: 1.6 }}>{step.text}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+
+  </script>
+</body>
+</html>
