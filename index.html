@@ -16,17 +16,18 @@ html, body { margin: 0; padding: 0; }
 <body>
 <div id="root"></div>
 <script>
+
 const { useState } = React;
 const costs = {
   1: {
-    total: 72,
-    perServe: 3.6,
-    tip: "Sea bass & saffron are the main cost drivers. Swap sea bass for basa fillets (~$10 saving) and replace saffron with \xBD tsp turmeric for a budget version around $52.",
+    total: 70,
+    perServe: 3.5,
+    tip: "Sea bass & saffron are the main cost drivers. Swap sea bass for basa fillets (~$10 saving) and replace saffron with \xBD tsp turmeric for a budget version around $50.",
     rows: [
-      { cat: "\u{1F966} Produce", detail: "Fennel, cherry tomatoes, cucumber, radishes, zucchini, capsicum, onions, garlic, ginger, lemons, fresh herbs", est: 18 },
+      { cat: "\u{1F966} Produce", detail: "Fennel, cherry tomatoes, watermelon, zucchini, capsicum, onions, baby spinach, garlic, ginger, lemons, fresh herbs", est: 18 },
       { cat: "\u{1F969} Protein & Dairy", detail: "Sea bass 4\xD7150g (~$22), halloumi 250g (~$5), feta 200g (~$4), chickpeas can (~$1.50)", est: 33 },
-      { cat: "\u{1F33E} Grains & Pasta", detail: "Basmati rice, whole wheat orzo, pita breads, red lentils", est: 8 },
-      { cat: "\u{1FAD9} Pantry", detail: "Crushed tomatoes, olives, sun-dried tomatoes, saffron (~$4), za'atar, sumac, spices, olive oil, broth, white wine, pomegranate seeds", est: 13 }
+      { cat: "\u{1F33E} Grains & Pasta", detail: "Basmati rice, whole wheat orzo, red lentils", est: 6 },
+      { cat: "\u{1FAD9} Pantry", detail: "Crushed tomatoes, olives, sun-dried tomatoes, saffron (~$4), za'atar, spices, olive oil, broth, white wine, vinegar, honey, pomegranate seeds", est: 13 }
     ]
   },
   2: {
@@ -71,6 +72,16 @@ const costs = {
       { cat: "\u{1F969} Plant Protein", detail: "Extra-firm tofu \xD72 blocks (~$6), chickpeas \xD72 cans (~$3), cannellini beans \xD72 cans (~$3)", est: 12 },
       { cat: "\u{1F33E} Grains & Legumes", detail: "Wild rice blend (~$6), quinoa 500g (~$5), sourdough bread, crushed tomatoes \xD72 cans", est: 11 },
       { cat: "\u{1FAD9} Pantry", detail: "Tahini (~$6), nutritional yeast (~$5), hemp seeds (~$4), sunflower seeds, walnuts, smoked paprika, miso, mirin, soy sauce, sesame oil, vinegars, maple syrup, sesame seeds, vegetable broth", est: 8 }
+    ]
+  },
+  6: {
+    total: 62, perServe: 3.10,
+    tip: "The main costs are thinly sliced ribeye and fresh ramen noodles. Swap ribeye for sliced chuck steak (~$5 saving) and use dried ramen noodles to save another ~$4. Dashi powder is available at Woolworths/Coles Asian aisle and is cheaper than dashi packets.",
+    rows: [
+      { cat: "\u{1F966} Produce", detail: "Onions x4, green onions (bunch), cabbage (1/4 head), carrot, shiitake mushrooms, garlic, ginger", est: 8 },
+      { cat: "\u{1F969} Protein & Dairy", detail: "Chicken thighs 500g (~$8), thinly sliced beef/ribeye 250g (~$12), pork belly 375g (~$8), eggs x10, butter", est: 32 },
+      { cat: "\u{1F33E} Grains & Noodles", detail: "Japanese short-grain rice 2kg, fresh ramen noodles 2 serves (~$4), yakisoba noodles 1 pack (~$4)", est: 10 },
+      { cat: "\u{1FAD9} Pantry", detail: "Soy sauce, mirin, sake, dashi powder/packets, miso paste, sesame oil, ketchup, Worcestershire sauce, oyster sauce, sugar, neutral oil, doubanjiang, sesame seeds, pickled ginger, aonori, green peas (frozen)", est: 12 }
     ]
   }
 };
@@ -121,18 +132,18 @@ const menus = [
       {
         category: "Salad",
         icon: "\u{1F957}",
-        name: "Fattoush & Halloumi",
-        description: "Crispy pita, cucumber, tomatoes, radish, grilled halloumi & sumac dressing",
-        cal: 290,
+        name: "Halloumi & Watermelon Salad",
+        description: "Grilled halloumi, sweet watermelon, pickled red onion, mint & olives",
+        cal: 310,
         tags: ["Low Carb", "Calcium Rich"],
         servings: 4,
-        ingredients: ["2 whole wheat pita breads", "250g halloumi, sliced 1cm thick", "2 large tomatoes, chopped", "1 English cucumber, diced", "6 radishes, thinly sliced", "4 spring onions, sliced", "\xBD cup fresh parsley", "\xBD cup fresh mint", "4 tbsp olive oil", "2 tbsp lemon juice", "1 tsp sumac", "\xBD tsp dried mint", "Salt"],
+        ingredients: ["250g halloumi, sliced 1cm thick", "500g seedless watermelon, cubed", "\xBD small red onion, thinly sliced", "100g baby spinach or rocket", "\xBC cup pitted kalamata olives", "\xBD cup fresh mint leaves", "2 tbsp olive oil", "1 tbsp red wine vinegar", "1 tsp honey", "Salt & black pepper"],
         steps: [
-          { title: "Crisp the pita", text: "Tear pita into rough pieces, toss with 1 tbsp olive oil and a pinch of salt. Spread on a baking sheet and bake at 190\xB0C (375\xB0F) for 10\u201312 minutes until golden and crunchy. Set aside." },
           { title: "Grill halloumi", text: "Heat a dry grill pan or non-stick skillet over high heat. Grill halloumi slices for 2 minutes per side until deeply golden with char marks. Do not add oil." },
-          { title: "Make dressing", text: "Whisk together remaining 3 tbsp olive oil, lemon juice, sumac, dried mint, and a pinch of salt." },
-          { title: "Assemble salad", text: "Combine tomatoes, cucumber, radish, spring onions, parsley, and mint in a large bowl. Drizzle with dressing and toss gently." },
-          { title: "Add toppings", text: "Add crispy pita pieces and toss lightly. Top with warm grilled halloumi slices. Serve immediately so the pita stays crunchy." }
+          { title: "Pickle the onion", text: "Toss thinly sliced red onion with a pinch of salt and the red wine vinegar. Let sit for 10 minutes to mellow its sharpness." },
+          { title: "Make dressing", text: "Whisk together olive oil, honey, salt, and pepper." },
+          { title: "Assemble salad", text: "Arrange spinach or rocket on a platter. Scatter over watermelon cubes, pickled red onion, olives, and mint leaves." },
+          { title: "Add toppings", text: "Top with the warm grilled halloumi straight from the pan. Drizzle with dressing and serve immediately while the cheese is still soft and warm against the cold watermelon." }
         ]
       },
       {
@@ -171,10 +182,10 @@ const menus = [
       }
     ],
     shopping: {
-      "Produce": ["2 fennel bulbs", "300g cherry tomatoes", "2 large tomatoes", "1 English cucumber", "6 radishes", "2 zucchini", "1 red bell pepper", "2 red onions", "4 spring onions", "1 large onion", "8 cloves garlic", "Fresh ginger (small knob)", "2 lemons", "Fresh parsley (bunch)", "Fresh mint (bunch)", "Fresh cilantro (bunch)", "Fresh dill (small bunch)"],
+      "Produce": ["2 fennel bulbs", "300g cherry tomatoes", "2 large tomatoes", "500g seedless watermelon", "2 zucchini", "1 red bell pepper", "2 red onions", "1 small red onion", "4 spring onions", "1 large onion", "100g baby spinach or rocket", "8 cloves garlic", "Fresh ginger (small knob)", "2 lemons", "Fresh parsley (bunch)", "Fresh mint (bunch)", "Fresh cilantro (bunch)", "Fresh dill (small bunch)"],
       "Protein & Dairy": ["4 sea bass fillets (150g each)", "250g halloumi", "200g feta cheese", "1 can (400g) chickpeas"],
-      "Grains & Pasta": ["2 cups basmati rice", "400g whole wheat orzo", "2 whole wheat pita breads", "1.5 cups red lentils"],
-      "Pantry": ["1 can (400g) crushed tomatoes", "\xBD cup kalamata olives", "\xBD cup sun-dried tomatoes", "Saffron threads", "Za'atar spice blend", "Sumac", "Cumin", "Coriander", "Turmeric", "Cinnamon", "Dried oregano", "Dried mint", "Olive oil (large bottle)", "Vegetable broth (2 liters)", "\xBD cup dry white wine", "Pomegranate seeds"]
+      "Grains & Pasta": ["2 cups basmati rice", "400g whole wheat orzo", "1.5 cups red lentils"],
+      "Pantry": ["1 can (400g) crushed tomatoes", "\xBE cup kalamata olives", "\xBD cup sun-dried tomatoes", "Saffron threads", "Za'atar spice blend", "Cumin", "Coriander", "Turmeric", "Cinnamon", "Dried oregano", "Olive oil (large bottle)", "Red wine vinegar", "Honey", "Vegetable broth (2 liters)", "\xBD cup dry white wine", "Pomegranate seeds"]
     }
   },
   {
@@ -587,6 +598,127 @@ const menus = [
       "Pantry": ["2 cans (400g) crushed tomatoes", "Tahini (large jar)", "Nutritional yeast", "Hemp seeds", "Sunflower seeds", "Walnuts (1.5 cups)", "Smoked paprika (large jar)", "Sweet paprika", "Cumin", "Dried oregano", "Dried thyme", "White miso paste", "Mirin", "Soy sauce / tamari", "Sesame oil", "Rice vinegar", "Apple cider vinegar", "Maple syrup", "Cornstarch", "Sesame seeds (mixed)", "Olive oil", "Neutral oil", "Vegetable broth (2 liters)"]
     }
   }
+
+  ,{
+    id: 6,
+    name: "Japanese Favorites",
+    theme: "Washoku comfort classics",
+    color: "#B5451B",
+    bg: "#FFF5F0",
+    light: "#FFE9E0",
+    emoji: "\u{1F363}",
+    dishes: [
+      {
+        category: "Soup", icon: "\u{1F35C}", name: "Miso Ramen",
+        description: "Savory miso broth with ground pork, sesame, fresh ramen noodles, soft-boiled egg & green onion",
+        cal: 433, tags: ["Umami Rich", "30 Minutes"], servings: 2,
+        ingredients: [
+          "2 cloves garlic, minced", "\u00BD tsp fresh ginger, grated", "1 shallot, minced",
+          "1 tbsp toasted sesame seeds (ground)", "1 tbsp sesame oil",
+          "115g ground pork", "1 tsp doubanjiang (chili bean paste)",
+          "3 tbsp miso paste", "1 tbsp sugar", "1 tbsp sake",
+          "1 liter chicken or vegetable stock", "Salt & white pepper to taste",
+          "2 servings fresh or dried ramen noodles",
+          "Toppings: green onion, corn kernels, soft-boiled egg, nori, bean sprouts, pickled ginger"
+        ],
+        steps: [
+          { title: "Prep aromatics & grind sesame", text: "Mince garlic, grate ginger, and mince shallot. Grind the sesame seeds in a small bowl until roughly crushed but still with some texture. Set aside." },
+          { title: "Saut\u00E9 aromatics", text: "Heat sesame oil in a medium pot over medium-low heat. Add garlic, ginger, and shallot and stir-fry for 1\u20132 minutes until fragrant. Do not let them brown." },
+          { title: "Cook pork & build broth base", text: "Add ground pork and increase to medium heat. Cook, breaking it up, until no longer pink. Add doubanjiang and miso paste and quickly blend with the meat. Stir in ground sesame seeds and sugar." },
+          { title: "Add stock & simmer", text: "Pour in sake and stock. Bring to a simmer, stirring to dissolve everything. Taste and season with salt and white pepper. Keep covered on low heat while you cook the noodles." },
+          { title: "Cook noodles & assemble", text: "Bring a separate pot of unsalted water to a boil. Cook noodles al dente per packet directions. Drain well and divide into warmed bowls. Ladle the hot broth over the noodles and add your toppings: green onion, corn, halved soft-boiled egg, a sheet of nori, bean sprouts, and pickled ginger." }
+        ]
+      },
+      {
+        category: "Rice Dish", icon: "\u{1F35A}", name: "Oyakodon",
+        description: "Tender chicken thigh & soft-cooked egg simmered in dashi-soy sauce, served over steamed rice",
+        cal: 537, tags: ["High Protein", "30 Minutes"], servings: 2,
+        ingredients: [
+          "280g boneless chicken thighs, cut into 2cm pieces", "1 tbsp sake",
+          "\u00BD onion, sliced thin", "3\u20134 large eggs (room temperature)",
+          "\u00BD cup dashi stock (or 1 tsp dashi powder dissolved in \u00BD cup hot water)",
+          "2 tbsp soy sauce", "2 tbsp mirin", "2 tsp sugar",
+          "2 servings cooked Japanese short-grain rice",
+          "Green onion or mitsuba to garnish", "Shichimi togarashi (optional)"
+        ],
+        steps: [
+          { title: "Marinate chicken & prepare eggs", text: "Toss chicken pieces with sake and set aside 5 minutes. Crack eggs into a bowl and cut through the whites 5\u20136 times with chopsticks\u2014do NOT beat them. You want streaks of white and yolk, not a uniform mix." },
+          { title: "Make seasoning & simmer onion", text: "Combine dashi, soy sauce, mirin, and sugar in a bowl. Add sliced onion to a cold frying pan, pour in the seasoning mixture, and turn heat to medium. Bring to a simmer." },
+          { title: "Cook chicken", text: "Add chicken on top of the onion. Once simmering, lower to medium-low and cook uncovered for 5 minutes, flipping chicken halfway, until cooked through and onion is tender." },
+          { title: "Add eggs in two stages", text: "Increase to medium heat. With liquid simmering, drizzle two-thirds of the egg mixture in a circular pattern, avoiding the edges. When just set but still runny, add the remaining one-third of eggs. Scatter green onion on top." },
+          { title: "Serve over rice", text: "Cook to your preferred doneness\u2014slightly runny is traditional. Spoon the chicken and egg over steamed rice in bowls, drizzling some sauce on top. Sprinkle with shichimi togarashi if you like heat." }
+        ]
+      },
+      {
+        category: "Protein Main", icon: "\u{1F95A}", name: "Gyudon",
+        description: "Thinly sliced beef & caramelised onion simmered in a sweet-savory dashi sauce over rice",
+        cal: 657, tags: ["Comfort Food", "20 Minutes"], servings: 2,
+        ingredients: [
+          "250g thinly sliced beef (ribeye or chuck, ask your butcher or freeze and slice thin)",
+          "\u00BD onion, thinly sliced", "1 green onion, sliced diagonally",
+          "\u00BD cup dashi stock", "2 tbsp sake", "2 tbsp mirin",
+          "3 tbsp soy sauce", "1 tbsp sugar",
+          "2 servings cooked Japanese short-grain rice",
+          "Pickled red ginger (beni shoga) to serve"
+        ],
+        steps: [
+          { title: "Make the sauce in the pan", text: "In a large cold frying pan, combine dashi, sake, mirin, soy sauce, and sugar. Stir until sugar dissolves. Do NOT turn on the heat yet." },
+          { title: "Layer onion then beef", text: "Scatter sliced onion into the sauce, separating the layers. Lay beef slices on top to cover the onion, separating each slice so they lie flat." },
+          { title: "Cover and cook", text: "Cover with a lid and turn heat to medium. Once simmering, reduce heat and cook covered for 3\u20134 minutes. Skim any scum from the broth once or twice as it simmers." },
+          { title: "Add green onion & finish", text: "Scatter green onion on top and cook covered for 1 more minute. Stop as soon as the beef is no longer pink\u2014overcooked beef becomes chewy." },
+          { title: "Serve over rice", text: "Divide steamed rice into large bowls. Spoon beef and onion mixture on top. Drizzle extra broth over the rice. Top with pickled red ginger and serve immediately." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "\u{1F35D}", name: "Yakisoba",
+        description: "Stir-fried wheat noodles with pork belly, cabbage, carrot & sweet-savory yakisoba sauce",
+        cal: 630, tags: ["Street Food", "30 Minutes"], servings: 3,
+        ingredients: [
+          "1 pack yakisoba noodles (pre-steamed, 3 serves, ~450g)",
+          "375g pork belly slices, cut into 3cm pieces",
+          "\u00BC head green cabbage, roughly chopped",
+          "1 carrot, julienned", "\u00BD onion, sliced",
+          "3 shiitake mushrooms, sliced", "2 green onions, cut into 5cm pieces",
+          "2 tbsp neutral oil", "Black pepper to taste",
+          "Yakisoba Sauce: \u00BC cup Worcestershire sauce, 4 tsp oyster sauce, 4 tsp ketchup, 2 tsp soy sauce, 2 tsp sugar",
+          "Toppings: aonori (dried green seaweed), pickled red ginger"
+        ],
+        steps: [
+          { title: "Make sauce & loosen noodles", text: "Whisk all sauce ingredients together and set aside. Heat oil in a large skillet or wok over medium heat. Add noodle blocks and warm, flipping once, until loose enough to separate with chopsticks. Transfer to a plate." },
+          { title: "Cook pork", text: "In the same hot pan, add pork belly in a single layer. Season with black pepper. Stir-fry until no longer pink." },
+          { title: "Add vegetables in stages", text: "Add onion and carrot; stir-fry 1\u20132 minutes. Add cabbage and shiitake; cook until cabbage begins to soften. Add green onion and cook 1 minute more. Don\u2019t overcrowd\u2014cook in batches if needed." },
+          { title: "Combine with noodles & sauce", text: "Return noodles to the pan on top of the pork and vegetables. Pour sauce over everything. Toss with tongs until every noodle is coated and the sauce has caramelised slightly." },
+          { title: "Serve immediately", text: "Plate straight from the pan\u2014yakisoba loses its texture fast. Sprinkle aonori and top with pickled red ginger. Serve hot." }
+        ]
+      },
+      {
+        category: "Salad", icon: "\u{1F373}", name: "Omurice",
+        description: "Creamy soft-scrambled omelette wrapped around savory ketchup-glazed chicken rice",
+        cal: 609, tags: ["Kid-Friendly", "Yoshoku Classic"], servings: 2,
+        ingredients: [
+          "4 large eggs", "\u00BD tsp salt (divided)", "2 tbsp unsalted butter (divided)",
+          "85g boneless chicken thigh, cut into 1cm cubes", "\u00BC onion, finely minced",
+          "1 tbsp green peas (frozen or canned)", "1 tbsp unsalted butter (for rice)",
+          "5 tbsp ketchup (plus extra to drizzle)", "1 tsp Worcestershire sauce",
+          "Salt & black pepper", "2 servings cooked Japanese short-grain rice (warm)"
+        ],
+        steps: [
+          { title: "Cook chicken rice", text: "Melt 1 tbsp butter in a large pan over medium heat. Saut\u00E9 onion until tender. Add chicken with a pinch of salt and pepper; cook until no longer pink. Add ketchup and Worcestershire sauce and stir to coat, letting excess moisture evaporate. Add warm rice and fold together gently. Add peas. Remove from heat and set aside." },
+          { title: "Portion the rice", text: "Divide chicken rice into two portions. Using a small bowl or your hands, shape each portion into a football (oval) shape. Set aside\u2014you\u2019ll place one portion on each omelette." },
+          { title: "Beat & strain eggs", text: "Crack 2 eggs per person into a bowl. Cut through the whites with chopsticks (do not whisk). Add \u00BC tsp salt and strain through a fine mesh sieve for a silky-smooth texture." },
+          { title: "Make the omelette", text: "Melt 1 tbsp butter in a small (20cm) non-stick pan over medium heat. Pour in the egg mixture. Stir quickly in a spiral with chopsticks while shaking the pan until small, creamy curds form. Stop stirring when still half-cooked and slightly runny. Tilt pan to spread uncooked egg." },
+          { title: "Wrap rice & plate", text: "Place one rice portion in the centre of the omelette. Fold both sides of the omelette over the rice to wrap it. Tilt a plate against the pan and flip to invert the omurice seam-side down. Gently reshape with a paper towel into a rugby ball. Drizzle ketchup over the top and serve immediately. Repeat for the second serving." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["4 onions", "Green onions (1 bunch)", "\u00BC head green cabbage", "1 carrot", "3-4 shiitake mushrooms", "2 cloves garlic", "Fresh ginger (small knob)", "1 shallot", "Bean sprouts (bag)"],
+      "Protein": ["500g boneless chicken thighs", "250g thinly sliced beef (ribeye or chuck)", "375g pork belly slices", "10 large eggs", "115g ground pork"],
+      "Grains & Noodles": ["Japanese short-grain rice (2kg)", "Fresh or dried ramen noodles (2 serves)", "Yakisoba noodles (1 pack, 3 serves)"],
+      "Pantry": ["Soy sauce", "Mirin", "Sake (or dry sherry)", "Dashi powder or packets", "White miso paste", "Sesame oil (toasted/dark)", "Ketchup", "Worcestershire sauce", "Oyster sauce", "Doubanjiang (chili bean paste)", "Sesame seeds", "Sugar", "Neutral oil", "Unsalted butter", "Frozen green peas (small bag)", "Pickled red ginger (beni shoga)", "Aonori dried seaweed", "Corn kernels (canned or frozen)", "Nori sheets", "Shichimi togarashi (optional)"]
+    }
+  }
+
 ];
 const TAB = { MENU: "menu", COST: "cost", SHOPPING: "shopping", COOKBOOK: "cookbook" };
 const catColors = {
@@ -663,6 +795,7 @@ function App() {
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App));
+
 
 </script>
 </body>
