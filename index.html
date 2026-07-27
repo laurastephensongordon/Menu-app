@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>5 Healthy World Menus</title>
+<title>World Kitchen Menus</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <style>
@@ -16,6 +16,7 @@ html, body { margin: 0; padding: 0; }
 <body>
 <div id="root"></div>
 <script>
+
 
 const { useState } = React;
 const costs = {
@@ -83,7 +84,18 @@ const costs = {
       { cat: "\u{1F33E} Grains & Noodles", detail: "Japanese short-grain rice 2kg, fresh ramen noodles 2 serves (~$4), yakisoba noodles 1 pack (~$4)", est: 10 },
       { cat: "\u{1FAD9} Pantry", detail: "Soy sauce, mirin, sake, dashi powder/packets, miso paste, sesame oil, ketchup, Worcestershire sauce, oyster sauce, sugar, neutral oil, doubanjiang, sesame seeds, pickled ginger, aonori, green peas (frozen)", est: 12 }
     ]
+  },
+  7: {
+    total: 55, perServe: 2.75,
+    tip: "Most budget-friendly Middle Eastern menu. Ground beef and lamb mince are the main costs — use all beef to save ~$5. Sumac and 7-spice are available at Coles/Woolworths in the spice aisle or at any Middle Eastern grocery store. Tahini is stocked at most supermarkets.",
+    rows: [
+      { cat: "\u{1F966} Produce", detail: "Onions x5 (large), tomatoes x4, cucumber, parsley (2 bunches), mint, lemons x5, garlic, lettuce/romaine, radishes, green onions", est: 12 },
+      { cat: "\u{1F969} Protein", detail: "Chicken thighs 800g (~$10), beef & lamb mince 500g (~$9)", est: 19 },
+      { cat: "\u{1F33E} Grains & Legumes", detail: "Basmati rice, brown/green lentils 2 cups, bulgur wheat 1 cup, pita bread x8", est: 8 },
+      { cat: "\u{1FAD9} Pantry", detail: "Olive oil, tahini, cumin, coriander, cinnamon, allspice, paprika, turmeric, sumac, 7-spice blend, cardamom, garlic powder, plain yogurt (small tub), pomegranate molasses (optional), chili flakes", est: 16 }
+    ]
   }
+
 };
 const menus = [
   {
@@ -719,6 +731,143 @@ const menus = [
     }
   }
 
+  ,{
+    id: 7,
+    name: "Middle Eastern Feast",
+    theme: "Levant street food & home cooking",
+    color: "#6B3A2A",
+    bg: "#FFF8F5",
+    light: "#FFE8DF",
+    emoji: "\u{1F9C6}",
+    dishes: [
+      {
+        category: "Protein Main", icon: "\u{1F357}", name: "Chicken Shawarma",
+        description: "Chicken thighs marinated in warm Middle Eastern spices, pan-seared & served in pita with garlic sauce & fresh veg",
+        cal: 480, tags: ["High Protein", "Street Food"], servings: 4,
+        ingredients: [
+          "800g boneless skinless chicken thighs, cut into strips",
+          "4 tbsp olive oil", "3 tbsp lemon juice (1-2 lemons)",
+          "4 cloves garlic, minced",
+          "1.5 tsp cumin", "1.5 tsp paprika", "1 tsp coriander",
+          "1 tsp turmeric", "0.5 tsp cinnamon", "0.5 tsp allspice",
+          "0.5 tsp cardamom", "0.5 tsp black pepper", "1 tsp salt",
+          "Pinch of chili flakes",
+          "To serve: pita bread, sliced tomato, sliced cucumber, pickled chili, shredded lettuce",
+          "Garlic sauce (toum): 4 cloves garlic, 3 tbsp mayo or Greek yogurt, 1 tbsp lemon juice"
+        ],
+        steps: [
+          { title: "Make the marinade", text: "In a large bowl whisk together olive oil, lemon juice, garlic, and all the spices. Add the chicken strips and toss until every piece is thoroughly coated. Cover and refrigerate for at least 1 hour — overnight is ideal for deeper flavour." },
+          { title: "Make quick garlic sauce", text: "Mince garlic very finely. Mix with mayo or yogurt and lemon juice until smooth. Season with salt. Refrigerate until serving — the flavour intensifies as it sits." },
+          { title: "Cook the chicken", text: "Heat a large heavy skillet (cast iron is ideal) over medium-high heat. Add chicken in a single layer — do not overcrowd. Cook undisturbed for 6-8 minutes until deeply browned on the underside. Flip and cook a further 4-6 minutes until cooked through and caramelised at the edges." },
+          { title: "Rest & slice", text: "Transfer chicken to a board and rest 3-5 minutes. Slice thinly against the grain — the caramelised edges are the best part. The resting allows juices to redistribute so every slice stays juicy." },
+          { title: "Build the wrap", text: "Warm pita directly over a gas flame or in a dry pan. Spread garlic sauce generously, then pile on chicken, shredded lettuce, sliced tomato, cucumber, and pickled chili. Roll tightly and wrap in foil for the full street-food effect." }
+        ]
+      },
+      {
+        category: "Pasta Dish", icon: "\u{1FAF3}", name: "Arayes",
+        description: "Crispy pita pockets stuffed with spiced beef & lamb mince, grilled until golden — served with tahini-yogurt dip",
+        cal: 420, tags: ["Kafta Spiced", "30 Minutes"], servings: 4,
+        ingredients: [
+          "4 pita breads", "500g ground beef and lamb mince (combined, or all beef)",
+          "1 medium onion, very finely diced or pulsed in food processor",
+          "1 cup fresh parsley, finely chopped",
+          "1.5 tsp Lebanese 7-spice (or mixed spice + pinch allspice)",
+          "0.5 tsp cinnamon", "0.5 tsp cumin", "0.5 tsp sumac",
+          "1 tsp salt", "0.5 tsp black pepper",
+          "1 medium tomato, finely diced and squeezed of excess juice",
+          "2 tbsp olive oil (for brushing)",
+          "Dipping sauce: 4 tbsp Greek yogurt, 2 tbsp tahini, 1 tbsp lemon juice, 1 clove garlic (minced), sumac to garnish"
+        ],
+        steps: [
+          { title: "Make the filling", text: "In a large bowl combine the mince, finely diced onion, parsley, diced tomato (squeeze out excess juice first to prevent sogginess), 7-spice, cinnamon, cumin, sumac, salt, and pepper. Mix thoroughly with your hands until completely combined and the filling feels uniform." },
+          { title: "Stuff the pita", text: "Cut each pita in half and carefully open the cut edge to create a pocket. Spread a generous, thin, even layer of meat filling inside each half — about 3-4 tablespoons per half. Press firmly so the filling adheres inside. Don't overstuff or the filling will fall out while cooking." },
+          { title: "Cook until golden", text: "Brush the outside of each stuffed pita with olive oil. Heat a grill pan or heavy skillet over medium-high heat. Cook arayes for 4-5 minutes per side, pressing gently with a spatula, until the pita is deeply golden and crisp and the meat is cooked through. Alternatively bake at 220°C for 15 minutes, flipping halfway." },
+          { title: "Make the dipping sauce", text: "Whisk together yogurt, tahini, lemon juice, and garlic until smooth. Add a splash of water if too thick. Season with salt and transfer to a small bowl. Dust with sumac and a drizzle of olive oil." },
+          { title: "Serve hot", text: "Cut each arayes into triangles and serve immediately — they lose their crispness as they cool. Arrange on a platter with the tahini-yogurt dip alongside, plus lemon wedges and extra parsley." }
+        ]
+      },
+      {
+        category: "Rice Dish", icon: "\u{1F35B}", name: "Mujadara",
+        description: "Comfort pilaf of lentils & basmati rice topped with deeply caramelised crispy onions — vegan & naturally gluten-free",
+        cal: 380, tags: ["Vegan", "Gluten-Free"], servings: 5,
+        ingredients: [
+          "1.5 cups green or brown lentils, rinsed (not red)",
+          "1 cup basmati rice, rinsed and soaked 20 minutes",
+          "5 large onions — 4 finely diced, 1 thinly sliced for crispy topping",
+          "6 tbsp olive oil (divided)",
+          "1.5 tsp ground cumin", "0.5 tsp cinnamon",
+          "1 tsp salt (plus more to taste)",
+          "3.5 cups water or vegetable stock",
+          "To serve: plain yogurt, fresh parsley, lemon wedges"
+        ],
+        steps: [
+          { title: "Caramelise the onions — be patient", text: "Heat 4 tbsp olive oil in your largest pot over medium-low heat. Add the 4 finely diced onions with a pinch of salt and cook, stirring every few minutes, for 35-40 minutes until deep golden-brown and jammy. They should smell sweet and rich. This is the soul of mujadara — do not rush it." },
+          { title: "Cook lentils", text: "Meanwhile, in a separate saucepan cover lentils with 4 cups of water. Bring to a boil, then simmer uncovered for 15 minutes until par-cooked but still firm — they should have a little bite. Drain and set aside." },
+          { title: "Build the pilaf", text: "Add cumin and cinnamon to the pot with the caramelised onions and stir for 1 minute. Add the drained lentils, soaked (drained) rice, 3.5 cups water or stock, and 1 tsp salt. Stir once, bring to a boil, then cover tightly and cook on the lowest heat for 18-20 minutes until all liquid is absorbed." },
+          { title: "Make crispy onion topping", text: "While the pilaf cooks, heat remaining 2 tbsp olive oil in a small pan over medium-high heat. Add the thinly sliced onion and fry, stirring often, for 15-20 minutes until deeply browned, slightly crisp at the edges, and intensely flavoured. Drain on paper towel." },
+          { title: "Rest & serve", text: "Once the pilaf is done, place a folded kitchen towel between the pot and lid and rest for 10 minutes — this absorbs steam and prevents mushiness. Fluff gently with a fork. Serve in bowls topped with the crispy onions, a spoonful of yogurt, fresh parsley, and a squeeze of lemon." }
+        ]
+      },
+      {
+        category: "Salad", icon: "\u{1F957}", name: "Fattoush",
+        description: "Crispy pita chip salad with cucumber, tomato, radish, parsley, mint & tangy sumac-lemon dressing",
+        cal: 220, tags: ["Vegan", "Antioxidant Rich"], servings: 4,
+        ingredients: [
+          "2 pita breads, torn into pieces",
+          "3 tbsp olive oil (for toasting pita, plus dressing)",
+          "3 large ripe tomatoes, roughly chopped",
+          "2 small cucumbers, diced",
+          "8 radishes, thinly sliced",
+          "4 green onions, thinly sliced",
+          "1 cup fresh parsley leaves, roughly chopped",
+          "0.5 cup fresh mint leaves",
+          "1 small head romaine or cos lettuce, torn",
+          "Dressing: 4 tbsp olive oil, 3 tbsp lemon juice, 1 tsp sumac",
+          "0.5 tsp dried mint", "1 small clove garlic (minced)", "salt & pepper"
+        ],
+        steps: [
+          { title: "Crisp the pita chips", text: "Tear pita into rough 3cm pieces. Toss with 1 tbsp olive oil and a pinch of salt. Spread on a baking sheet and bake at 200°C for 10-12 minutes until golden and completely crunchy, turning once. Or pan-fry in a little oil. Set aside to cool — they must be fully crisp before adding to the salad." },
+          { title: "Make the sumac dressing", text: "Whisk together olive oil, lemon juice, sumac, dried mint, minced garlic, salt, and pepper. Taste — it should be tangy and bright. The sumac adds a distinctive fruity acidity. Adjust lemon and salt to your preference." },
+          { title: "Prep the vegetables", text: "Chop tomatoes, dice cucumber, slice radishes paper-thin, and slice green onions on an angle. Roughly chop parsley and tear mint leaves. Keep everything in separate piles so you can assemble neatly — the colours are part of the dish." },
+          { title: "Assemble just before serving", text: "Toss lettuce, tomato, cucumber, radish, green onion, parsley, and mint in a large bowl. Drizzle with dressing and toss gently to coat." },
+          { title: "Add pita chips & serve", text: "Add the crispy pita chips and toss very briefly — just once or twice. Serve immediately. If the pita sits in the dressing it will soften, which some people love — but for maximum crunch, serve right away." }
+        ]
+      },
+      {
+        category: "Soup", icon: "\u{1F372}", name: "Shorbat Adas",
+        description: "Silky red lentil soup with cumin & lemon — finished with fried garlic and a swirl of olive oil",
+        cal: 290, tags: ["Vegan", "Iron Rich"], servings: 5,
+        ingredients: [
+          "1.5 cups red lentils, rinsed until water runs clear",
+          "1 large onion, diced",
+          "4 cloves garlic — 3 minced for soup, 1 sliced thin for garnish",
+          "2 medium carrots, diced",
+          "1 tsp cumin seeds (or 1.5 tsp ground cumin)",
+          "0.5 tsp turmeric", "0.5 tsp coriander",
+          "0.25 tsp cinnamon", "0.5 tsp black pepper",
+          "5 cups vegetable stock or water",
+          "3 tbsp olive oil (divided)", "1.5 tsp salt",
+          "Juice of 1.5 lemons",
+          "To serve: lemon wedges, toasted pita, ground cumin, fresh parsley, sumac, dried chili flakes"
+        ],
+        steps: [
+          { title: "Sauté aromatics", text: "Heat 2 tbsp olive oil in a large pot over medium heat. Add diced onion and cook 8-10 minutes until soft and golden. Add the 3 minced garlic cloves, cumin, turmeric, coriander, and cinnamon and stir for 1-2 minutes until intensely fragrant — the oil should turn golden-orange from the turmeric." },
+          { title: "Add lentils & simmer", text: "Add diced carrots, rinsed red lentils, vegetable stock, salt, and pepper. Bring to a boil, then reduce to a gentle simmer. Cook uncovered for 20-25 minutes, stirring occasionally, until lentils are completely soft and broken down. The soup should be thick and the lentils fully dissolved." },
+          { title: "Blend smooth", text: "Use an immersion blender to puree the soup completely smooth. Alternatively, carefully transfer in batches to a blender. The texture should be silky and velvety, not grainy. Add a splash of water if it's thicker than you'd like." },
+          { title: "Finish with lemon", text: "Stir in lemon juice — start with the juice of 1 lemon and taste. The lemon is essential and lifts the whole soup. Adjust salt and lemon to your taste. Keep warm on low heat while you make the garnish." },
+          { title: "Crispy garlic garnish & serve", text: "In a small pan, heat remaining 1 tbsp olive oil over medium heat. Add thinly sliced garlic and fry for 2-3 minutes until golden and just starting to crisp — watch carefully as it burns fast. Ladle soup into bowls, swirl the garlic oil over the top, and finish with a squeeze of lemon, a pinch of cumin, dried chili, and fresh parsley. Serve with warm toasted pita." }
+        ]
+      }
+    ],
+    shopping: {
+      "Produce": ["5 large onions", "4 medium tomatoes", "2 small cucumbers", "8 radishes", "4 green onions", "2 medium carrots", "1 small romaine/cos lettuce", "Parsley (2 large bunches)", "Fresh mint (1 bunch)", "10 garlic cloves", "5 lemons"],
+      "Protein": ["800g boneless skinless chicken thighs", "500g beef & lamb mince (or all beef)"],
+      "Grains & Legumes": ["Basmati rice (1kg)", "Green or brown lentils (500g bag)", "Red lentils (500g bag)", "Pita bread x8 (or flatbread)"],
+      "Dairy": ["Plain Greek yogurt (500g tub)"],
+      "Pantry": ["Olive oil (large bottle)", "Tahini (jar)", "Ground cumin", "Ground coriander", "Cinnamon", "Allspice", "Paprika (sweet)", "Turmeric", "Cardamom", "Garlic powder", "Sumac", "Lebanese 7-spice blend", "Dried mint", "Chili flakes", "Salt & black pepper", "Pomegranate molasses (optional)", "Vegetable stock (1 liter)"]
+    }
+  }
+
 ];
 const TAB = { MENU: "menu", COST: "cost", SHOPPING: "shopping", COOKBOOK: "cookbook" };
 const catColors = {
@@ -795,6 +944,7 @@ function App() {
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App));
+
 
 
 </script>
